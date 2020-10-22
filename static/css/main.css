@@ -4,3 +4,24 @@ body {
   background-attachment: fixed;
   background-size: cover; #100% 100%;
 }
+
+#add-segmap {
+    display: flex;
+    border: 4px dashed #fff;
+    height: 25%;
+    min-height: 240px;
+    width:25%;
+    min-width: 240px;
+    justify-content: center;
+    align-items: center;
+    font-size: 50px;
+    color: #fff;
+    border-radius: 4px;
+}
+#add-segmap:hover {
+    background: rgba(255, 255, 255, 0.17);
+}
+
+#add-new-segmap {
+    display: none;
+}

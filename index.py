@@ -19,9 +19,13 @@ def demo():
 def uploader():
     if request.method == "POST":
         f = request.files['image']
-        filename = secure_filename(f.filename)
+        filename, file_extension = os.path.splitext(secure_filename(f.filename))
+        print(file_extension)
+        if file_extension not in [".jpeg", ".jpg", ".png"]:
+            return "No valid images were found."
+
         f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        return "Imagen subida exitosamente"
+        return "Image uploaded successfully."
 
 
 if __name__ == '__main__':
