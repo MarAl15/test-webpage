@@ -1,9 +1,11 @@
 import os
-from flask import Flask, render_template, request
+from flask import  Flask, flash, request, redirect, url_for, render_template
 from werkzeug.utils import secure_filename
+#https://flask.palletsprojects.com/en/1.1.x/patterns/flashing/
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = "./tmp"
+app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+app.config['UPLOAD_FOLDER'] = "static/tmp/"
 
 
 # Define EndPoints
@@ -11,21 +13,36 @@ app.config['UPLOAD_FOLDER'] = "./tmp"
 def home():
     return render_template("home.html")
 
-@app.route('/demo', strict_slashes=False)
+@app.route('/demo', methods=['GET', 'POST'])
 def demo():
+    if request.method == "POST":
+        if 'file' not in request.files:
+            flash('No file part.')
+            return redirect(request.url)
+        f = request.files['file']
+        if f.filename == '':
+            flash('No image selected for uploading.')
+            return redirect(request.url)
+
+        filename, file_extension = os.path.splitext(secure_filename(f.filename))
+
+        if file_extension.lower() in [".jpeg", ".jpg", ".png"]:
+            f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+            flash('Image successfully uploaded and displayed.')
+            # ~ return 'Image successfully uploaded and displayed'
+            return render_template('demo.html', filename=filename)
+
+        flash('No valid images were found. Allowed image types are: png, jpg, jpeg.')
+        return redirect(request.url)
+
     return render_template("demo.html")
 
-@app.route('/uploader', methods=['POST'])
-def uploader():
-    if request.method == "POST":
-        f = request.files['image']
-        filename, file_extension = os.path.splitext(secure_filename(f.filename))
-        print(file_extension)
-        if file_extension not in [".jpeg", ".jpg", ".png"]:
-            return "No valid images were found."
 
-        f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        return "Image uploaded successfully."
+@app.route('/display/<filename>')
+def display_image(filename):
+    return redirect(url_for('static', filename='tmp/' + filename), code=301)
+
 
 
 if __name__ == '__main__':

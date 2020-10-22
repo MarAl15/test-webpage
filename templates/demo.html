@@ -5,12 +5,27 @@
 
 <h1>Demo</h1>
 
+<p>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <p>{{ message }}</p>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+</p>
 
-<form action="/uploader" method="POST" enctype="multipart/form-data">
+
+<form action="/demo" method="POST" enctype="multipart/form-data">
+
     <div id="add-segmap">
-        <span><i class="fa fa-camera" style="font-size:36px"></i></span>
+        {% if filename %}
+            <img id="segmap" src="{{ url_for('display_image', filename=filename) }}">
+        {% else %}
+            <span><i class="fa fa-camera" style="font-size:36px"></i></span>
+        {% endif %}
     </div>
-    <input type="file" id="add-new-segmap" name="image">
+    <input type="file" id="add-new-segmap" name="file">
     <input type="submit">
 </form>
 

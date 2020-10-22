@@ -9,9 +9,9 @@ body {
     display: flex;
     border: 4px dashed #fff;
     height: 25%;
-    min-height: 240px;
+    min-height: 400px;
     width:25%;
-    min-width: 240px;
+    min-width: 400px;
     justify-content: center;
     align-items: center;
     font-size: 50px;
@@ -24,4 +24,11 @@ body {
 
 #add-new-segmap {
     display: none;
+}
+
+#segmap {
+    height: 25%;
+    min-height: 400px;
+    width:25%;
+    min-width: 400px;
 }
