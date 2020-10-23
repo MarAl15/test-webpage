@@ -22,11 +22,11 @@
         {% if filename %}
             <img id="segmap" src="{{ url_for('display_image', filename=filename) }}">
         {% else %}
-            <span><i class="fa fa-camera" style="font-size:36px"></i></span>
+            <span id="span-segmap"><i class="fa fa-camera" style="font-size:36px"></i></span>
         {% endif %}
     </div>
     <input type="file" id="add-new-segmap" name="file">
-    <input type="submit">
+    <input type="submit" value="Submit">
 </form>
 
 
