@@ -8,10 +8,10 @@ body {
 #add-segmap {
     display: flex;
     border: 4px dashed #fff;
-    height: 25%;
-    min-height: 400px;
-    width:25%;
-    min-width: 400px;
+    height: 85vmin;
+    max-height: 512px;
+    width: 85vmin;
+    max-width: 512px;
     justify-content: center;
     align-items: center;
     font-size: 50px;
