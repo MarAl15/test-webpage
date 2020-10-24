@@ -7,19 +7,13 @@ body {
 
 .main-container {
     background: green;
+    display: flex;
     justify-content: center;
-    align-items: center;
 }
 
 .sub-container {
     display: inline-block;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-}
-
-.form-container {
-    display: inline-block;
+    margin: 0 1.5%;
 }
 
 .add {
@@ -43,16 +37,14 @@ body {
     margin: 2% 0;
 }
 
-.segmap {
-    height: 85vmin;
-    max-height: 410px;
-    width: 85vmin;
-    max-width: 410px;
+.dim-img {
+    height: 30vmax;
+    width: 30vmax;
+    width-min: 256px;
 }
 
 .segmap-tmp {
-    width: 85vmin;
-    max-width: 410px;
+    width: 30vmax;
 }
 
 #icon-segmap:after {
@@ -61,16 +53,13 @@ body {
 }
 
 .style {
-    height: 45vmin;
-    max-height: 200px;
-    width: 85vmin;
-    max-width: 256px;
+    height: 12vmax;
+    width: 20vmax;
     margin: 2% 0;
 }
 
 .style-tmp {
-    width: 85vmin;
-    max-width: 256px;
+    width: 10vmax;
     margin: 2% 0;
 }
 
@@ -79,13 +68,6 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-.synimg {
-    height: 85vmin;
-    max-height: 410px;
-    width: 85vmin;
-    max-width: 410px;
 }
 
 .icon-synimg:after {
@@ -99,18 +81,20 @@ body {
     background: blue;
 }
 
-#arrow-container {
-    height: 65vmin;
-    max-height: 200px;
-    width: 85vmin;
-    max-width: 256px;
+#right-arrow {
+    height: 18vmax;
+    width: 20vmax;
     background-color: coral;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-#compute-photo {
+#down-arrow {
+    display: None;
+}
+
+.compute-photo {
   background-color: white;
   display: flex;
   justify-content: center;
@@ -123,4 +107,52 @@ body {
   border-radius: 20%;
   border-style: solid;
   border-color: #4CAF50;
+}
+
+@media(max-width: 730px) {
+    .main-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .form-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .dim-img {
+        height: 90vmin;
+        width: 90vmin;
+        margin: 2% 0;
+    }
+
+    .segmap-tmp {
+        width: 90vmin;
+    }
+
+
+    .style {
+        height: 50vmin;
+        width: 60vmin;
+        margin: 2% 20vmin;
+    }
+
+    .style-tmp {
+        width: 60vmin;
+        margin: 2% 20vmin;
+    }
+
+
+    #right-arrow {
+        display:None
+    }
+
+    #down-arrow {
+        width: 100%;
+        background-color: coral;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 }
