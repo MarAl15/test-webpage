@@ -13,8 +13,12 @@ app.config['UPLOAD_FOLDER'] = "static/tmp/"
 def home():
     return render_template("home.html")
 
+filename_segmap = None
+filename_style = None
+
 @app.route('/demo', methods=['GET', 'POST'])
 def demo():
+    global filename_segmap, filename_style
     if request.method == "POST":
         if 'file' not in request.files:
             flash('No file part.')
@@ -31,7 +35,13 @@ def demo():
 
             flash('Image successfully uploaded and displayed.')
             # ~ return 'Image successfully uploaded and displayed'
-            return render_template('demo.html', filename=filename)
+
+            if request.form['submit_button'] == "Upload Segmentation Map":
+                filename_segmap = filename
+            elif request.form['submit_button'] == "Upload Style Filter":
+                filename_style = filename
+
+            return render_template('demo.html', filename_segmap=filename_segmap, filename_style=filename_style)
 
         flash('No valid images were found. Allowed image types are: png, jpg, jpeg.')
         return redirect(request.url)

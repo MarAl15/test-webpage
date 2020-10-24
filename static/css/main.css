@@ -5,30 +5,122 @@ body {
   background-size: cover; #100% 100%;
 }
 
-#add-segmap {
+.main-container {
+    background: green;
+    justify-content: center;
+    align-items: center;
+}
+
+.sub-container {
+    display: inline-block;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.form-container {
+    display: inline-block;
+}
+
+.add {
     display: flex;
     border: 4px dashed #fff;
-    height: 85vmin;
-    max-height: 512px;
-    width: 85vmin;
-    max-width: 512px;
     justify-content: center;
     align-items: center;
     font-size: 50px;
     color: #fff;
     border-radius: 4px;
 }
-#add-segmap:hover {
+.add:hover {
     background: rgba(255, 255, 255, 0.17);
 }
 
-#add-new-segmap {
+.add-new {
     display: none;
 }
 
-#segmap {
-    height: 25%;
-    min-height: 400px;
-    width:25%;
-    min-width: 400px;
+.submit {
+    margin: 2% 0;
+}
+
+.segmap {
+    height: 85vmin;
+    max-height: 410px;
+    width: 85vmin;
+    max-width: 410px;
+}
+
+.segmap-tmp {
+    width: 85vmin;
+    max-width: 410px;
+}
+
+#icon-segmap:after {
+    content: '\270E\25B2'; #039B 2206 22C0 25B3  25CF
+    font-size: 70px;
+}
+
+.style {
+    height: 45vmin;
+    max-height: 200px;
+    width: 85vmin;
+    max-width: 256px;
+    margin: 2% 0;
+}
+
+.style-tmp {
+    width: 85vmin;
+    max-width: 256px;
+    margin: 2% 0;
+}
+
+.base {
+    background: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.synimg {
+    height: 85vmin;
+    max-height: 410px;
+    width: 85vmin;
+    max-width: 410px;
+}
+
+.icon-synimg:after {
+    content: '\26F0';
+    font-size: 50px;
+}
+
+#fill-space {
+    height:50px;
+    width:50px;
+    background: blue;
+}
+
+#arrow-container {
+    height: 65vmin;
+    max-height: 200px;
+    width: 85vmin;
+    max-width: 256px;
+    background-color: coral;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#compute-photo {
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 50px;
+  padding:1%;
+  color: #4CAF50;
+  height:60px;
+  width:60px;
+  border-radius: 20%;
+  border-style: solid;
+  border-color: #4CAF50;
 }
