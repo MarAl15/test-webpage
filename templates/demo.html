@@ -19,9 +19,9 @@
 <div class="main-container">
     <div class="sub-container">
         <form class="form-container" action="/demo" method="POST" enctype="multipart/form-data">
-            <div class="add segmap" id="add-segmap">
+            <div class="add dim-img" id="add-segmap">
                 {% if filename_segmap %}
-                    <img id="span-segmap" class="segmap" src="{{ url_for('display_image', filename=filename_segmap) }}">
+                    <img id="span-segmap" class="dim-img" src="{{ url_for('display_image', filename=filename_segmap) }}">
                 {% else %}
                     <span id="span-segmap"><i id="icon-segmap"></i></span>
                 {% endif %}
@@ -32,8 +32,8 @@
     </div>
 
     <div class="sub-container">
-        <div id="arrow-container">
-            <a href="#" id="compute-photo">&#10137;</a>
+        <div id="right-arrow">
+            <a href="#" class="compute-photo">&#10137;</a>
         </div>
 
         <form class="form-container" action="/demo" method="POST" enctype="multipart/form-data">
@@ -47,13 +47,17 @@
             <input type="file" class="add-new" id="add-new-style" name="file">
             <input type="submit" class= "submit" name="submit_button" value="Upload Style Filter">
         </form>
+
+        <div id="down-arrow">
+            <a href="#" class="compute-photo">&#8595;</a>
+        </div>
     </div>
 
     <div class="sub-container">
-        <div class="base synimg">
+        <div class="base dim-img">
 <!--
             {% if filename_synimg %}
-                <img class="synimg" src="{{ url_for('display_image', filename=filename_synimg) }}">
+                <img class="dim-img" src="{{ url_for('display_image', filename=filename_synimg) }}">
             {% else %}
 -->
                 <span><i class="icon-synimg"></i></span>
@@ -61,7 +65,6 @@
             {% endif %}
 -->
         </div>
-        <input type="submit" style="background: None; border: None" value="">
     </div>
 </div>
 {% endblock%}
