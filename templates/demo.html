@@ -16,18 +16,52 @@
 </p>
 
 
-<form action="/demo" method="POST" enctype="multipart/form-data">
-
-    <div id="add-segmap">
-        {% if filename %}
-            <img id="segmap" src="{{ url_for('display_image', filename=filename) }}">
-        {% else %}
-            <span id="span-segmap"><i class="fa fa-camera" style="font-size:36px"></i></span>
-        {% endif %}
+<div class="main-container">
+    <div class="sub-container">
+        <form class="form-container" action="/demo" method="POST" enctype="multipart/form-data">
+            <div class="add segmap" id="add-segmap">
+                {% if filename_segmap %}
+                    <img id="span-segmap" class="segmap" src="{{ url_for('display_image', filename=filename_segmap) }}">
+                {% else %}
+                    <span id="span-segmap"><i id="icon-segmap"></i></span>
+                {% endif %}
+            </div>
+            <input type="file" class="add-new" id="add-new-segmap" name="file">
+            <input type="submit" class= "submit" name="submit_button" value="Upload Segmentation Map">
+        </form>
     </div>
-    <input type="file" id="add-new-segmap" name="file">
-    <input type="submit" value="Submit">
-</form>
 
+    <div class="sub-container">
+        <div id="arrow-container">
+            <a href="#" id="compute-photo">&#10137;</a>
+        </div>
 
+        <form class="form-container" action="/demo" method="POST" enctype="multipart/form-data">
+            <div class="add style" id="add-style">
+                {% if filename_style %}
+                    <img id="span-style" class="style" src="{{ url_for('display_image', filename=filename_style) }}">
+                {% else %}
+                    <span id="span-style"><i class="fa fa-camera" style="font-size:36px"></i></span>
+                {% endif %}
+            </div>
+            <input type="file" class="add-new" id="add-new-style" name="file">
+            <input type="submit" class= "submit" name="submit_button" value="Upload Style Filter">
+        </form>
+    </div>
+
+    <div class="sub-container">
+        <div class="base synimg">
+<!--
+            {% if filename_synimg %}
+                <img class="synimg" src="{{ url_for('display_image', filename=filename_synimg) }}">
+            {% else %}
+-->
+                <span><i class="icon-synimg"></i></span>
+<!--
+            {% endif %}
+-->
+        </div>
+        <input type="submit" style="background: None; border: None" value="">
+    </div>
+</div>
 {% endblock%}
