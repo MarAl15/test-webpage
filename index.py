@@ -34,17 +34,28 @@ def demo():
             f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
             flash('Image successfully uploaded and displayed.')
-            # ~ return 'Image successfully uploaded and displayed'
 
             if request.form['submit_button'] == "Upload Segmentation Map":
+                if filename_segmap is not None and filename_segmap!=filename:
+                    os.remove(os.path.join(app.config['UPLOAD_FOLDER'],filename_segmap))
                 filename_segmap = filename
             elif request.form['submit_button'] == "Upload Style Filter":
+                if filename_style is not None and filename_style!=filename:
+                    os.remove(os.path.join(app.config['UPLOAD_FOLDER'],filename_style))
                 filename_style = filename
 
             return render_template('demo.html', filename_segmap=filename_segmap, filename_style=filename_style)
 
         flash('No valid images were found. Allowed image types are: png, jpg, jpeg.')
         return redirect(request.url)
+
+    # Remove files
+    if filename_segmap is not None:
+        os.remove(os.path.join(app.config['UPLOAD_FOLDER'],filename_segmap))
+        filename_segmap = None
+    if filename_style is not None:
+        os.remove(os.path.join(app.config['UPLOAD_FOLDER'],filename_style))
+        filename_style = None
 
     return render_template("demo.html")
 
