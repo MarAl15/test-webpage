@@ -33,7 +33,9 @@
 
     <div class="sub-container">
         <div id="right-arrow">
+<!--
             <a href="#" class="compute-photo">&#10137;</a>
+-->
         </div>
 
         <form class="form-container" action="/demo" method="POST" enctype="multipart/form-data">
@@ -49,21 +51,19 @@
         </form>
 
         <div id="down-arrow">
-            <a href="#" class="compute-photo">&#8595;</a>
+<!--
+            <a href="/demo" class="compute-photo">&#8595;</a>
+-->
         </div>
     </div>
 
     <div class="sub-container">
         <div class="base dim-img">
-<!--
-            {% if filename_synimg %}
-                <img class="dim-img" src="{{ url_for('display_image', filename=filename_synimg) }}">
+            {% if filename_fake %}
+                <img class="dim-img" src="{{ url_for('display_image', filename=filename_fake) }}">
             {% else %}
--->
                 <span><i class="icon-synimg"></i></span>
-<!--
             {% endif %}
--->
         </div>
     </div>
 </div>
