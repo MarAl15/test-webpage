@@ -8,7 +8,7 @@ document.getElementById("add-style").onclick = function() {
 
 // Preview image before uploading
 document.getElementById("add-new-segmap").onchange = function() {
-    file = this.files[0];
+    var file = this.files[0];
 
     if (['image/jpeg', 'image/png'].indexOf(file.type) != -1)
         document.getElementById('span-segmap').outerHTML =
@@ -16,8 +16,10 @@ document.getElementById("add-new-segmap").onchange = function() {
     else
         alert('File not supported. Allowed image types are: png, jpg, jpeg.')
 
-};document.getElementById("add-new-style").onchange = function() {
-    file = this.files[0];
+};
+
+document.getElementById("add-new-style").onchange = function() {
+    var file = this.files[0];
 
     if (['image/jpeg', 'image/png'].indexOf(file.type) != -1)
         document.getElementById('span-style').outerHTML =
