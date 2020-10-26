@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 {% extends "layout.html" %}
 
+{% block head %}
+{% endblock%}
+
+
 {% block content %}
 
 <h1>Demo</h1>
@@ -17,8 +21,9 @@
 
 
 <div class="main-container">
-    <div class="sub-container">
-        <form class="form-container" action="/demo" method="POST" enctype="multipart/form-data">
+
+    <form class="form-container" action="/demo" method="POST" enctype="multipart/form-data">
+        <div class="sub-container">
             <div class="add dim-img" id="add-segmap">
                 {% if filename_segmap %}
                     <img id="span-segmap" class="dim-img" src="{{ url_for('display_image', filename=filename_segmap) }}">
@@ -26,19 +31,10 @@
                     <span id="span-segmap"><i id="icon-segmap"></i></span>
                 {% endif %}
             </div>
-            <input type="file" class="add-new" id="add-new-segmap" name="file">
-            <input type="submit" class= "submit" name="submit_button" value="Upload Segmentation Map">
-        </form>
-    </div>
-
-    <div class="sub-container">
-        <div id="right-arrow">
-<!--
-            <a href="#" class="compute-photo">&#10137;</a>
--->
+            <input type="file" class="no-display" id="add-new-segmap" name="file_segmap">
         </div>
 
-        <form class="form-container" action="/demo" method="POST" enctype="multipart/form-data">
+        <div class="sub-container">
             <div class="add style" id="add-style">
                 {% if filename_style %}
                     <img id="span-style" class="style" src="{{ url_for('display_image', filename=filename_style) }}">
@@ -46,25 +42,25 @@
                     <span id="span-style"><i class="fa fa-camera" style="font-size:36px"></i></span>
                 {% endif %}
             </div>
-            <input type="file" class="add-new" id="add-new-style" name="file">
-            <input type="submit" class= "submit" name="submit_button" value="Upload Style Filter">
-        </form>
+            <input type="file" class="no-display" id="add-new-style" name="file_style">
 
-        <div id="down-arrow">
-<!--
-            <a href="/demo" class="compute-photo">&#8595;</a>
--->
+            <div class="compute-container">
+                <button type="submit" class="compute-photo">
+                   <i id="icon-arrow"></i>
+                </button>
+            </div>
         </div>
-    </div>
+    </form>
 
     <div class="sub-container">
         <div class="base dim-img">
             {% if filename_fake %}
                 <img class="dim-img" src="{{ url_for('display_image', filename=filename_fake) }}">
             {% else %}
-                <span><i class="icon-synimg"></i></span>
+                <span><i id="icon-synimg"></i></span>
             {% endif %}
         </div>
     </div>
 </div>
+
 {% endblock%}

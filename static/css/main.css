@@ -5,8 +5,17 @@ body {
   background-size: cover; #100% 100%;
 }
 
+.no-display {
+    display: none;
+}
+
 .main-container {
     background: green;
+    display: flex;
+    justify-content: center;
+}
+
+.form-container {
     display: flex;
     justify-content: center;
 }
@@ -29,14 +38,6 @@ body {
     background: rgba(255, 255, 255, 0.17);
 }
 
-.add-new {
-    display: none;
-}
-
-.submit {
-    margin: 2% 0;
-}
-
 .dim-img {
     height: 30vmax;
     width: 30vmax;
@@ -44,7 +45,10 @@ body {
 }
 
 .segmap-tmp {
-    width: 30vmax;
+    height:auto;
+    max-height: 30vmax;
+    width:auto;
+    max-width: 30vmax;
 }
 
 #icon-segmap:after {
@@ -59,7 +63,10 @@ body {
 }
 
 .style-tmp {
-    width: 10vmax;
+    height:auto;
+    max-height: 12vmax;
+    width:auto;
+    max-width: 20vmax;
     margin: 2% 0;
 }
 
@@ -70,18 +77,12 @@ body {
     align-items: center;
 }
 
-.icon-synimg:after {
+#icon-synimg:after {
     content: '\26F0';
     font-size: 50px;
 }
 
-#fill-space {
-    height:50px;
-    width:50px;
-    background: blue;
-}
-
-#right-arrow {
+.compute-container {
     height: 18vmax;
     width: 20vmax;
     background-color: coral;
@@ -90,23 +91,28 @@ body {
     align-items: center;
 }
 
-#down-arrow {
-    display: None;
+.compute-photo {
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 100px;
+    font-weight: bold;
+    padding:1%;
+    color: #4CAF50;
+    height:90px;
+    width:90px;
+    border-radius: 20%;
+    border-style: solid;
+    border-color: #4CAF50;
 }
 
-.compute-photo {
-  background-color: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 50px;
-  padding:1%;
-  color: #4CAF50;
-  height:60px;
-  width:60px;
-  border-radius: 20%;
-  border-style: solid;
-  border-color: #4CAF50;
+.compute-photo:hover {
+    background-color: #e7ffe1;
+}
+
+#icon-arrow:after {
+    content: '\2192';
 }
 
 @media(max-width: 730px) {
@@ -116,7 +122,6 @@ body {
     }
 
     .form-container {
-        display: flex;
         flex-direction: column;
         align-items: center;
     }
@@ -128,7 +133,8 @@ body {
     }
 
     .segmap-tmp {
-        width: 90vmin;
+        max-height: 90vmin;
+        max-width: 90vmin;
     }
 
 
@@ -139,20 +145,16 @@ body {
     }
 
     .style-tmp {
-        width: 60vmin;
+        max-height: 50vmin;
+        max-width: 60vmin;
         margin: 2% 20vmin;
     }
 
-
-    #right-arrow {
-        display:None
+    .compute-container {
+        width: 100%;
     }
 
-    #down-arrow {
-        width: 100%;
-        background-color: coral;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+    #icon-arrow:after {
+        content: '\2193';
     }
 }
