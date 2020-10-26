@@ -24,28 +24,38 @@
 
     <form class="form-container" action="/demo" method="POST" enctype="multipart/form-data">
         <div class="sub-container">
-            <div class="add dim-img" id="add-segmap">
+<!--
+            <div class="example">
+-->
+            <div class="add dim-img display-text" id="add-segmap">
                 {% if filename_segmap %}
                     <img id="span-segmap" class="dim-img" src="{{ url_for('display_image', filename=filename_segmap) }}">
                 {% else %}
                     <span id="span-segmap"><i id="icon-segmap"></i></span>
                 {% endif %}
+                <div class="content-segmap">
+                    <div class="text">Click to upload segmentation map.</div>
+                </div>
             </div>
+
             <input type="file" class="no-display" id="add-new-segmap" name="file_segmap">
         </div>
 
         <div class="sub-container">
-            <div class="add style" id="add-style">
+            <div class="add style display-text" id="add-style">
                 {% if filename_style %}
                     <img id="span-style" class="style" src="{{ url_for('display_image', filename=filename_style) }}">
                 {% else %}
                     <span id="span-style"><i class="fa fa-camera" style="font-size:36px"></i></span>
                 {% endif %}
+                <div class="content-style">
+                    <div class="text">Click to upload style image.</div>
+                </div>
             </div>
             <input type="file" class="no-display" id="add-new-style" name="file_style">
 
             <div class="compute-container">
-                <button type="submit" class="compute-photo">
+                <button type="submit" class="compute-photo" data-toggle="tooltip" data-placement="bottom" title="Compute synthesized image">
                    <i id="icon-arrow"></i>
                 </button>
             </div>
