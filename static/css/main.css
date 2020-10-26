@@ -34,9 +34,6 @@ body {
     color: #fff;
     border-radius: 4px;
 }
-.add:hover {
-    background: rgba(255, 255, 255, 0.17);
-}
 
 .dim-img {
     height: 30vmax;
@@ -96,12 +93,12 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 100px;
+    font-size: 6vmax;
     font-weight: bold;
     padding:1%;
     color: #4CAF50;
-    height:90px;
-    width:90px;
+    height:6vmax;
+    width:6vmax;
     border-radius: 20%;
     border-style: solid;
     border-color: #4CAF50;
@@ -113,6 +110,86 @@ body {
 
 #icon-arrow:after {
     content: '\2192';
+}
+
+
+/*
+    DISPLAY TEXT - https://www.w3docs.com/snippets/css/how-to-display-an-animated-text-over-an-image-on-hover-using-only-css3.html
+*/
+.display-text {
+    position: relative;
+    padding: 0;
+    cursor: pointer;
+    overflow: hidden;
+}
+/*
+    Display segmentation map text
+*/
+.content-segmap {
+    opacity: 0;
+    font-size: 2.5vmax;
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: white; # #1c87c9;
+    background-color: rgba(200, 200, 200, 0.5);
+    height: 30vmax;
+    width: 30vmax;
+    width-min: 256px;
+    -webkit-transition: all 400ms ease-out;
+    -moz-transition: all 400ms ease-out;
+    -o-transition: all 400ms ease-out;
+    -ms-transition: all 400ms ease-out;
+    transition: all 400ms ease-out;
+    text-align: center;
+}
+.display-text .content-segmap:hover {
+    opacity: 1;
+}
+.display-text .content-segmap .text {
+    height: 0;
+    opacity: 1;
+    transition-delay: 0s;
+    transition-duration: 0.4s;
+}
+.display-text .content-segmap:hover .text {
+    opacity: 1;
+    transform: translateY(20vmax);
+    -webkit-transform: translateY(20vmax);
+}
+/*
+    Display style image text
+*/
+.content-style {
+    opacity: 0;
+    font-size: 1.5vmax;
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: white; # #1c87c9;
+    background-color: rgba(200, 200, 200, 0.5);
+    height: 12vmax;
+    width: 20vmax;
+    -webkit-transition: all 400ms ease-out;
+    -moz-transition: all 400ms ease-out;
+    -o-transition: all 400ms ease-out;
+    -ms-transition: all 400ms ease-out;
+    transition: all 400ms ease-out;
+    text-align: center;
+}
+.display-text .content-style:hover {
+    opacity: 1;
+}
+.display-text .content-style .text {
+    height: 0;
+    opacity: 1;
+    transition-delay: 0s;
+    transition-duration: 0.4s;
+}
+.display-text .content-style:hover .text {
+    opacity: 1;
+    transform: translateY(8vmax);
+    -webkit-transform: translateY(8vmax);
 }
 
 @media(max-width: 730px) {
@@ -154,7 +231,40 @@ body {
         width: 100%;
     }
 
+    .compute-photo {
+        font-size: 10vmax;
+        height:10vmax;
+        width:10vmax;
+    }
+
     #icon-arrow:after {
         content: '\2193';
     }
+
+
+    /**
+     *
+     */
+    .content-segmap {
+        font-size: 5vmin;
+        height: 90vmin;
+        width: 90vmin;
+    }
+    .display-text .content-segmap:hover .text {
+        opacity: 1;
+        transform: translateY(75vmin);
+        -webkit-transform: translateY(75vmin);
+    }
+
+    .content-style {
+        font-size: 4vmin;
+        height: 50vmin;
+        width: 60vmin;
+    }
+    .display-text .content-style:hover .text {
+        opacity: 1;
+        transform: translateY(40vmin);
+        -webkit-transform: translateY(40vmin);
+    }
+
 }
