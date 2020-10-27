@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+{% extends "layout.html" %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/version2.css') }}">
+
+<link rel="stylesheet" href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">
+
+<script src='https://kit.fontawesome.com/a076d05399.js'></script>
+{% endblock%}
+
+
+{% block content %}
+
+<h1>Demo</h1>
+
+<p>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <p>{{ message }}</p>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+</p>
+
+
+<div class="main-container">
+    <div class="sub-container item-container">
+        <div class="inline">
+            <hr class="line">
+            <p style="margin:0; padding: 0 7%">Tools</p>
+            <hr class="dotted-line">
+            <div class="items">
+                <!-- Bucket fill -->
+                <button id="bucket-fill-tool" class="paint-button" type="button" onclick="bucket_fill()"
+                        data-toggle="tooltip" data-placement="bottom" title="Bucket fill">
+                    <i class="las la-fill-drip icon"></i>
+                </button>
+                <!-- Pencil -->
+                <button id="pencil-tool" class="paint-button" type="button" onclick="pencil()"
+                        data-toggle="tooltip" data-placement="bottom" title="Pencil">
+                    <i class="fas fa-pencil-alt"></i>
+                </button>
+            </div>
+            <hr class="dashed-line">
+            <div class="items">
+                <!-- Line -->
+                <button id="line-tool" class="paint-button" type="button" onclick="line()"
+                        data-toggle="tooltip" data-placement="bottom" title="Line">
+                    <i class="fas fa-slash icon2"></i>
+                </button>
+                <!-- Rectangle -->
+                <button id="rectangle-tool" class="paint-button" type="button" onclick="rectangle()"
+                        data-toggle="tooltip" data-placement="bottom" title="Rectangle">
+                    <i class="icon">&#x25A0;</i>
+                </button>
+                <!-- Circle -->
+                <button id="circle-tool" class="paint-button" type="button" onclick="circle()"
+                        data-toggle="tooltip" data-placement="bottom" title="Circle">
+                    <i class="icon">&#x25CF;</i>
+                </button>
+            </div>
+
+            <hr class="line">
+            <p style="margin:0; padding: 0 7%">Stroke width</p>
+            <hr class="dotted-line">
+            <div class="items">
+                <!-- Plus -->
+                <button id="plus-tool" class="paint-button" type="button" onclick="plus()">
+                    <i class="fas fa-plus icon2"></i>
+                </button>
+                <i class="text">10</i>
+                <!-- Minus -->
+                <button id="minus-tool" class="paint-button" type="button" onclick="minus()">
+                    <i class="fas fa-minus icon2"></i>
+                </button>
+            </div>
+
+            <hr class="line">
+            <p style="margin:0; padding: 0 7%">Colors</p>
+            <hr class="dotted-line">
+            <div class="items">
+                <button id="1" class="circle-button red" type="button" onclick="color(red)"/>
+                <button id="2" class="circle-button blue" type="button" onclick="color(blue)"/>
+                <button id="3" class="circle-button green" type="button" onclick="color(green)"/>
+            </div>
+
+            <hr class="line">
+            <hr class="line">
+            <div class="items">
+                <!-- Download -->
+                <button id="download-tool" class="paint-button" type="button" onclick="download()"
+                        data-toggle="tooltip" data-placement="bottom" title="Download">
+                    <i class="fa fa-download"></i>
+                </button>
+                <div class="vl"></div>
+                <!-- Undo -->
+                <button id="undo-tool" class="paint-button" type="button" onclick="undo()"
+                        data-toggle="tooltip" data-placement="bottom" title="Undo">
+                    <i class="fas fa-undo-alt"></i>
+                </button>
+                <div class="vl"></div>
+                <!-- Undo -->
+                <button id="clear-tool" class="paint-button" type="button" onclick="clear()"
+                        data-toggle="tooltip" data-placement="bottom" title="Clear screen">
+                    <i class="far fa-window-close"></i>
+                </button>
+            </div>
+            <hr class="line">
+        </div>
+    </div>
+
+    <form class="form-container" action="/demov2" method="POST" enctype="multipart/form-data">
+        <div class="sub-container">
+            <div>
+                {% if filename_segmap %}
+                    <img id="span-segmap" class="dim-img" src="{{ url_for('display_image', filename=filename_segmap) }}">
+                {% else %}
+                    <canvas id="paint-segmap" class="dim-img canvas">
+                        Your browser does not support the HTML canvas tag.
+                    </canvas>
+                {% endif %}
+            </div>
+<!--
+
+            <input type="file" class="no-display" id="add-new-segmap-v2" name="file_segmap">
+-->
+        </div>
+
+        <div class="sub-container">
+            <div class="add style display-text" id="add-style-v2">
+                {% if filename_style %}
+                    <img id="span-style-v2" class="style" src="{{ url_for('display_image', filename=filename_style) }}">
+                {% else %}
+                    <span id="span-style-v2"><i class="fa fa-camera" style="font-size:36px"></i></span>
+                {% endif %}
+                <div class="content-style">
+                    <div class="text">Click to upload style image.</div>
+                </div>
+            </div>
+            <input type="file" class="no-display" id="add-new-style-v2" name="file_style">
+
+            <div class="compute-container">
+                <button type="submit" class="compute-photo" data-toggle="tooltip" data-placement="bottom" title="Generate image">
+                   <i id="icon-arrow"></i>
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <div class="sub-container">
+        <div class="base dim-img">
+            {% if filename_fake %}
+                <img class="dim-img" src="{{ url_for('display_image', filename=filename_fake) }}">
+            {% else %}
+                <span><i id="icon-synimg"></i></span>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+
+<!-- SCRIPTS -->
+<script src="{{url_for('static', filename='js/version2.js')}}"></script>
+{% endblock%}

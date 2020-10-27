@@ -9,6 +9,10 @@ body {
     display: none;
 }
 
+.inline {
+    display: inline-block;
+}
+
 .main-container {
     background: green;
     display: flex;

@@ -1,0 +1,95 @@
+.item-container {
+    height: 28vmax;
+    width: 15vmax;
+    margin: 3%;
+    padding: 2% 0;
+    background: #c0ffca;
+    border-radius: 5%;
+    display: flex;
+    justify-content: center;
+}
+
+#paint-segmap {
+    border: 2px solid #000000;
+    background: #9fd9ff;
+}
+
+.line {
+    height: 2px;
+    width: 10vmax;
+    border-width: 0;
+    color: black;
+    background-color: black;
+    margin: 0;
+    border-top: 1px dashed black;
+}
+/* Dashed border */
+.dashed-line {
+    margin: 0 15%;
+    border-top: 1px dashed black;
+}
+/* Dotted border */
+.dotted-line {
+    margin: 0 3%;
+    border-top: 1px dotted black;
+}
+
+/* Vertical line */
+.vl {
+  border-left: 1px dotted black;
+/*
+  height: 500px;
+*/
+}
+
+.items {
+    display: flex;
+    justify-content: center;
+}
+
+.paint-button {
+    background: None;
+    border: None;
+    font-size: 2vmax;
+    color: black;
+}
+
+.paint-button:hover {
+    color: blue;
+}
+
+.icon {
+    font-size: 2.7vmax;
+}
+
+.icon2 {
+    font-size: 1.5vmax
+}
+
+.text {
+    font-size: 2.3vmax
+}
+
+
+.circle-button {
+    border-radius: 50%;
+    border: 2px solid #000000;
+    height: 3vmax;
+    width: 3vmax;
+    margin: 2%;
+}
+
+.red {
+    background: red;
+}
+.green {
+    background: green;
+}
+.blue {
+    background: blue;
+}
+
+@media(max-width: 730px) {
+
+
+}

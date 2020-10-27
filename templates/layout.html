@@ -12,6 +12,8 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    {% block head %}
+    {% endblock%}
   </head>
   <body>
 
@@ -32,7 +34,10 @@
             <a class="nav-link" href="{{ url_for('home') }}">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('demo') }}">Demo</a>
+            <a class="nav-link" href="{{ url_for('demo') }}">Demo (v1)</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('demov2') }}">Demo (v2)</a>
           </li>
         </ul>
       </div>
@@ -48,8 +53,5 @@
 <!--
     </div>
 -->
-
-    <!-- SCRIPTS -->
-    <script src="{{url_for('static', filename='js/main.js')}}"></script>
   </body>
 </html>
