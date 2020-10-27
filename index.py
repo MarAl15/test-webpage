@@ -12,8 +12,8 @@ app.config['UPLOAD_FOLDER'] = "static/tmp/"
 
 # TENSORFLOW
 tf.get_logger().setLevel(logging.ERROR)
-gpus= tf.config.experimental.list_physical_devices('GPU')
-tf.config.experimental.set_memory_growth(gpus[0], True)
+# ~ gpus= tf.config.experimental.list_physical_devices('GPU')
+# ~ tf.config.experimental.set_memory_growth(gpus[0], True)
 # Parse arguments
 args = parse_args(train=False, one=True)
 # Initialize tester
@@ -59,6 +59,10 @@ def demo():
         return redirect(request.url)
 
     return render_template("demo.html")
+
+@app.route('/demov2', methods=['GET', 'POST'])
+def demo_v2():
+    return render_template("demov2.html")
 
 
 @app.route('/display/<filename>')
