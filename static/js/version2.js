@@ -27,6 +27,7 @@ ctx.canvas.width  = canvas.offsetWidth;
 ctx.canvas.height = canvas.offsetHeight;
 
 ctx.strokeStyle = 'black';
+ctx.fillStyle = 'black';
 ctx.lineWidth = 1; // Grosor de la línea
 
 window.onresize = function() {
@@ -60,8 +61,8 @@ function pencil() {
         if (drawing) {
             // x,y -> punto inicial
             // -> puntos en este momoento donde se encuentra el ratón, donde llegó
-            let x_prev = x,
-                y_prev = y;
+            const x_prev = x,
+                  y_prev = y;
 
             x = e.pageX - canvas.offsetLeft;
             y = e.pageY - canvas.offsetTop;
@@ -119,8 +120,49 @@ function line() {
     };
 }
 
+function rectangle() {
+    // Clica
+    canvas.onmousedown = function(e) {
+        img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+        // conseguimos la coordenadas correspondientes en el canvas
+        x = e.pageX - canvas.offsetLeft;
+        y = e.pageY - canvas.offsetTop;
+
+        drawing = true;
+    };
+
+    // Mueve el ratón
+    canvas.onmousemove = function(e) {
+        if (drawing) {
+            ctx.putImageData(img, 0, 0);
+
+            const x_curr = e.pageX - canvas.offsetLeft - x,
+                  y_curr = e.pageY - canvas.offsetTop - y;
+            ctx.strokeRect(x,y,  x_curr,y_curr);
+            ctx.fillRect(x,y,  x_curr,y_curr);
+        }
+    };
+
+    // Quita el click del ratón
+    canvas.onmouseup = function(e) {
+        if (drawing) {
+            ctx.putImageData(img, 0, 0);
+
+            const x_curr = e.pageX - canvas.offsetLeft - x,
+                  y_curr = e.pageY - canvas.offsetTop - y;
+            ctx.strokeRect(x,y,  x_curr,y_curr);
+            ctx.fillRect(x,y,  x_curr,y_curr);
+
+            drawing = false;
+            x = 0, y = 0;
+        }
+    };
+}
+
 function change_color(new_color) {
     ctx.strokeStyle = new_color;
+    ctx.fillStyle = new_color;
 }
 
 function draw(x1, y1, x2, y2) {
