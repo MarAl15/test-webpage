@@ -21,12 +21,13 @@ document.getElementById("add-new-style-v2").onchange = function() {
 let canvas = document.getElementById('paint-segmap'), // capturar canvas
     ctx = canvas.getContext('2d'), // contexto - nos permite dibujar sobre este objeto, manipularlo
     x=0, y=0,
-    drawing = false,
-    color = 'black',
-    stroke_width = 1;
+    drawing = false;
 
 ctx.canvas.width  = canvas.offsetWidth;
 ctx.canvas.height = canvas.offsetHeight;
+
+ctx.strokeStyle = 'black';
+ctx.lineWidth = 1; // Grosor de la línea
 
 window.onresize = function() {
     // Make our in-memory canvas
@@ -119,13 +120,11 @@ function line() {
 }
 
 function change_color(new_color) {
-    color = new_color;
+    ctx.strokeStyle = new_color;
 }
 
 function draw(x1, y1, x2, y2) {
     ctx.beginPath(); // nueva ruta
-    ctx.strokeStyle = color; // Color
-    ctx.lineWidth = stroke_width; // Grosor de la linea
     ctx.moveTo(x1, y1); // mover a la coordenada inicial
     ctx.lineTo(x2, y2); // dibujar una línea
     ctx.stroke(); // va a realizar una simple línea, no va a rellenar áreas
