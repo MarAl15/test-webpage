@@ -42,46 +42,46 @@ window.onresize = function() {
     ctx.drawImage(inMemCanvas, 0, 0, inMemCanvas.width, inMemCanvas.height, 0, 0, canvas.width, canvas.height);
 }
 
-
-// Capturamos el primer evento que sucede - cuando el usuario hace click sobre el canvas
-// e -> datos de donde el usuario dio click en la pantalla
-canvas.addEventListener('mousedown', function(e) {
-    // conseguimos la coordenadas correspondientes en el canvas
-    x = e.pageX - canvas.offsetLeft; // posición en x donde el usuario dio click en la pantalla - la posicion del canvas
-    y = e.pageY - canvas.offsetTop; // posición en y donde el usuario dio click en la pantalla - la posicion del canvas
-
-    drawing = true;
-});
-
 // Movemos el ratón
 // Dispara realmente la función que va a dibujar
-canvas.addEventListener('mousemove', function(e) {
-    if (drawing) {
-        // x,y -> punto inicial
-        // -> puntos en este momoento donde se encuentra el ratón, donde llegó
-        let x_prev = x,
-            y_prev = y;
+function pencil() {
+    // Capturamos el primer evento que sucede - cuando el usuario hace click sobre el canvas
+    // e -> datos de donde el usuario dio click en la pantalla
+    canvas.onmousedown = function(e) {
+        // conseguimos la coordenadas correspondientes en el canvas
+        x = e.pageX - canvas.offsetLeft; // posición en x donde el usuario dio click en la pantalla - la posicion del canvas
+        y = e.pageY - canvas.offsetTop; // posición en y donde el usuario dio click en la pantalla - la posicion del canvas
 
-        x = e.pageX - canvas.offsetLeft;
-        y = e.pageY - canvas.offsetTop;
-        draw(x_prev,y_prev, x,y);
-    }
-});
+        drawing = true;
+    };
+
+    canvas.onmousemove = function(e) {
+        if (drawing) {
+            // x,y -> punto inicial
+            // -> puntos en este momoento donde se encuentra el ratón, donde llegó
+            let x_prev = x,
+                y_prev = y;
+
+            x = e.pageX - canvas.offsetLeft;
+            y = e.pageY - canvas.offsetTop;
+            draw(x_prev,y_prev, x,y);
+        }
+    };
 
 
-// Quita el click del ratón
-canvas.addEventListener('mouseup', function(e) {
-    if (drawing) {
-        // x,y -> punto inicial
-        // -> puntos en este momoento donde se encuentra el ratón, donde llegó
-        draw(x, y,
-             e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop);
+    // Quita el click del ratón
+    canvas.onmouseup = function(e) {
+        if (drawing) {
+            // x,y -> punto inicial
+            // -> puntos en este momoento donde se encuentra el ratón, donde llegó
+            draw(x, y,
+                 e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop);
 
-        drawing = false;
-        x = 0, y = 0;
-    }
-});
-
+            drawing = false;
+            x = 0, y = 0;
+        }
+    };
+}
 
 function change_color(new_color) {
     color = new_color;
