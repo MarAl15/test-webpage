@@ -68,12 +68,47 @@ function pencil() {
         }
     };
 
-
     // Quita el click del ratón
     canvas.onmouseup = function(e) {
         if (drawing) {
             // x,y -> punto inicial
             // -> puntos en este momoento donde se encuentra el ratón, donde llegó
+            draw(x, y,
+                 e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop);
+
+            drawing = false;
+            x = 0, y = 0;
+        }
+    };
+}
+
+function line() {
+    // Clica
+    canvas.onmousedown = function(e) {
+        img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+        // conseguimos la coordenadas correspondientes en el canvas
+        x = e.pageX - canvas.offsetLeft;
+        y = e.pageY - canvas.offsetTop;
+
+        drawing = true;
+    };
+
+    // Mueve el ratón
+    canvas.onmousemove = function(e) {
+        if (drawing) {
+            ctx.putImageData(img, 0, 0);
+
+            draw(x, y,
+                 e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop);
+        }
+    };
+
+    // Quita el click del ratón
+    canvas.onmouseup = function(e) {
+        if (drawing) {
+            ctx.putImageData(img, 0, 0);
+
             draw(x, y,
                  e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop);
 
