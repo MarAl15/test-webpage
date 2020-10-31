@@ -66,7 +66,7 @@ function pencil() {
 
             x = e.pageX - canvas.offsetLeft;
             y = e.pageY - canvas.offsetTop;
-            draw(x_prev,y_prev, x,y);
+            draw('line', x_prev, y_prev, x, y);
         }
     };
 
@@ -75,8 +75,8 @@ function pencil() {
         if (drawing) {
             // x,y -> punto inicial
             // -> puntos en este momoento donde se encuentra el ratón, donde llegó
-            draw(x, y,
-                 e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop);
+            draw('line', x, y,
+                  e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop);
 
             drawing = false;
             x = 0, y = 0;
@@ -101,8 +101,8 @@ function line() {
         if (drawing) {
             ctx.putImageData(img, 0, 0);
 
-            draw(x, y,
-                 e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop);
+            draw('line', x, y,
+                  e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop);
         }
     };
 
@@ -111,8 +111,8 @@ function line() {
         if (drawing) {
             ctx.putImageData(img, 0, 0);
 
-            draw(x, y,
-                 e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop);
+            draw('line', x, y,
+                  e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop);
 
             drawing = false;
             x = 0, y = 0;
@@ -137,10 +137,8 @@ function rectangle() {
         if (drawing) {
             ctx.putImageData(img, 0, 0);
 
-            const x_curr = e.pageX - canvas.offsetLeft - x,
-                  y_curr = e.pageY - canvas.offsetTop - y;
-            ctx.strokeRect(x,y,  x_curr,y_curr);
-            ctx.fillRect(x,y,  x_curr,y_curr);
+            draw('rectangle', x, y,
+                  e.pageX - canvas.offsetLeft - x, e.pageY - canvas.offsetTop - y);
         }
     };
 
@@ -149,10 +147,8 @@ function rectangle() {
         if (drawing) {
             ctx.putImageData(img, 0, 0);
 
-            const x_curr = e.pageX - canvas.offsetLeft - x,
-                  y_curr = e.pageY - canvas.offsetTop - y;
-            ctx.strokeRect(x,y,  x_curr,y_curr);
-            ctx.fillRect(x,y,  x_curr,y_curr);
+            draw('rectangle', x, y,
+                  e.pageX - canvas.offsetLeft - x, e.pageY - canvas.offsetTop - y);
 
             drawing = false;
             x = 0, y = 0;
@@ -165,10 +161,16 @@ function change_color(new_color) {
     ctx.fillStyle = new_color;
 }
 
-function draw(x1, y1, x2, y2) {
+function draw(type, x1, y1, x2, y2) {
     ctx.beginPath(); // nueva ruta
-    ctx.moveTo(x1, y1); // mover a la coordenada inicial
-    ctx.lineTo(x2, y2); // dibujar una línea
+    if (type == 'line') {
+        ctx.moveTo(x1, y1); // mover a la coordenada inicial
+        ctx.lineTo(x2, y2); // dibujar una línea
+    }
+    else if (type == 'rectangle') {
+        ctx.rect(x1, y1, x2, y2);
+        ctx.fill();
+    }
     ctx.stroke(); // va a realizar una simple línea, no va a rellenar áreas
     ctx.closePath(); // cerramos la ruta
 }
