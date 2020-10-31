@@ -138,7 +138,7 @@ function rectangle() {
             ctx.putImageData(img, 0, 0);
 
             draw('rectangle', x, y,
-                  e.pageX - canvas.offsetLeft - x, e.pageY - canvas.offsetTop - y);
+                  e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop);
         }
     };
 
@@ -148,7 +148,7 @@ function rectangle() {
             ctx.putImageData(img, 0, 0);
 
             draw('rectangle', x, y,
-                  e.pageX - canvas.offsetLeft - x, e.pageY - canvas.offsetTop - y);
+                  e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop);
 
             drawing = false;
             x = 0, y = 0;
@@ -204,7 +204,7 @@ function draw(type, x1, y1, x2, y2) {
         ctx.lineTo(x2, y2); // dibujar una línea
     }
     else if (type == 'rectangle') {
-        ctx.rect(x1, y1, x2, y2);
+        ctx.rect(x1, y1, x2-x1, y2-y1);
         ctx.fill();
     }
     else if (type == 'circle') {
