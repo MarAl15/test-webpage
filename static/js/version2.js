@@ -156,6 +156,42 @@ function rectangle() {
     };
 }
 
+function circle() {
+    // Clica
+    canvas.onmousedown = function(e) {
+        img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+        // conseguimos la coordenadas correspondientes en el canvas
+        x = e.pageX - canvas.offsetLeft;
+        y = e.pageY - canvas.offsetTop;
+
+        drawing = true;
+    };
+
+    // Mueve el ratón
+    canvas.onmousemove = function(e) {
+        if (drawing) {
+            ctx.putImageData(img, 0, 0);
+
+            draw('circle', x, y,
+                  e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop);
+        }
+    };
+
+    // Quita el click del ratón
+    canvas.onmouseup = function(e) {
+        if (drawing) {
+            ctx.putImageData(img, 0, 0);
+
+            draw('circle', x, y,
+                  e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop);
+
+            drawing = false;
+            x = 0, y = 0;
+        }
+    };
+}
+
 function change_color(new_color) {
     ctx.strokeStyle = new_color;
     ctx.fillStyle = new_color;
@@ -169,6 +205,12 @@ function draw(type, x1, y1, x2, y2) {
     }
     else if (type == 'rectangle') {
         ctx.rect(x1, y1, x2, y2);
+        ctx.fill();
+    }
+    else if (type == 'circle') {
+        ctx.arc((x1+x2)/2, (y1+y2)/2, // center
+                Math.hypot(x2-x1, y2-y1)/2, // radius
+                0, 2*Math.PI)
         ctx.fill();
     }
     ctx.stroke(); // va a realizar una simple línea, no va a rellenar áreas
