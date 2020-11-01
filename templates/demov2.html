@@ -36,12 +36,12 @@
             <hr class="dotted-line">
             <div class="items">
                 <!-- Bucket fill -->
-                <button id="bucket-fill-tool" class="paint-button" type="button" onclick="bucket_fill()"
+                <button id="bucket-fill-tool" class="paint-button tool" type="button" onclick="bucket_fill()"
                         data-toggle="tooltip" data-placement="bottom" title="Bucket fill">
                     <i class="las la-fill-drip icon"></i>
                 </button>
                 <!-- Pencil -->
-                <button id="pencil-tool" class="paint-button" type="button" onclick="pencil()"
+                <button id="pencil-tool" class="paint-button tool" type="button" onclick="pencil()"
                         data-toggle="tooltip" data-placement="bottom" title="Pencil">
                     <i class="fas fa-pencil-alt"></i>
                 </button>
@@ -49,17 +49,17 @@
             <hr class="dashed-line">
             <div class="items">
                 <!-- Line -->
-                <button id="line-tool" class="paint-button" type="button" onclick="line()"
+                <button id="line-tool" class="paint-button tool" type="button" onclick="line()"
                         data-toggle="tooltip" data-placement="bottom" title="Line">
                     <i class="fas fa-slash icon2"></i>
                 </button>
                 <!-- Rectangle -->
-                <button id="rectangle-tool" class="paint-button" type="button" onclick="rectangle()"
+                <button id="rectangle-tool" class="paint-button tool" type="button" onclick="rectangle()"
                         data-toggle="tooltip" data-placement="bottom" title="Rectangle">
                     <i class="icon">&#x25A0;</i>
                 </button>
                 <!-- Circle -->
-                <button id="circle-tool" class="paint-button" type="button" onclick="circle()"
+                <button id="circle-tool" class="paint-button tool" type="button" onclick="circle()"
                         data-toggle="tooltip" data-placement="bottom" title="Circle">
                     <i class="icon">&#x25CF;</i>
                 </button>
@@ -157,5 +157,6 @@
 
 
 <!-- SCRIPTS -->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
 <script src="{{url_for('static', filename='js/version2.js')}}"></script>
 {% endblock %}
