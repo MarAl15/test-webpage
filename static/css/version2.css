@@ -82,6 +82,15 @@
     margin: 2%;
 }
 
+#color-selected {
+    border-radius: 20%;
+    border: 2px solid #000000;
+    height: 2vmax;
+    width: 2vmax;
+    display: inline-block;
+    margin: 2% 0 0 20%;
+}
+
 .red {
     background: red;
 }

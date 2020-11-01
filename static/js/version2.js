@@ -29,6 +29,7 @@ ctx.canvas.height = canvas.offsetHeight;
 ctx.strokeStyle = 'black';
 ctx.fillStyle = 'black';
 ctx.lineWidth = 1; // Grosor de la línea
+document.getElementById("color-selected").style.background = 'black';
 
 clear_canvas();
 
@@ -260,6 +261,8 @@ function bucket_fill() {
 function change_color(new_color) {
     ctx.strokeStyle = new_color;
     ctx.fillStyle = new_color;
+
+    document.getElementById("color-selected").style.background = new_color;
 }
 
 function change_width(new_width) {
