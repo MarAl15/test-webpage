@@ -260,6 +260,10 @@ function change_color(new_color) {
     ctx.fillStyle = new_color;
 }
 
+function change_width(new_width) {
+    ctx.lineWidth = new_width;
+}
+
 function draw(type, x1, y1, x2, y2) {
     ctx.beginPath(); // nueva ruta
     if (type == 'line') {
@@ -289,4 +293,9 @@ function hex2rgb(hex) {
     g: parseInt(result[2], 16),
     b: parseInt(result[3], 16)
   } : null;
+}
+
+
+function clear_canvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 }

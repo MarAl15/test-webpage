@@ -69,15 +69,7 @@
             <p style="margin:0; padding: 0 7%">Stroke width</p>
             <hr class="dotted-line">
             <div class="items">
-                <!-- Plus -->
-                <button id="plus-tool" class="paint-button" type="button" onclick="plus()">
-                    <i class="fas fa-plus icon2"></i>
-                </button>
-                <i class="text">10</i>
-                <!-- Minus -->
-                <button id="minus-tool" class="paint-button" type="button" onclick="minus()">
-                    <i class="fas fa-minus icon2"></i>
-                </button>
+                <input type="number" id="stroke_width" value="1" min="1" onclick="change_width(this.value)">
             </div>
 
             <hr class="line">
@@ -105,8 +97,8 @@
                 </button>
                 <div class="vl"></div>
                 <!-- Undo -->
-                <button id="clear-tool" class="paint-button" type="button" onclick="clear()"
-                        data-toggle="tooltip" data-placement="bottom" title="Clear screen">
+                <button id="clear-tool" class="paint-button" type="button" onclick="clear_canvas()"
+                        data-toggle="tooltip" data-placement="bottom" title="Clear canvas">
                     <i class="far fa-window-close"></i>
                 </button>
             </div>
