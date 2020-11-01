@@ -30,6 +30,8 @@ ctx.strokeStyle = 'black';
 ctx.fillStyle = 'black';
 ctx.lineWidth = 1; // Grosor de la línea
 
+clear_canvas();
+
 window.onresize = function() {
     // Make our in-memory canvas
     let inMemCanvas = document.createElement('canvas'),
@@ -297,5 +299,11 @@ function hex2rgb(hex) {
 
 
 function clear_canvas() {
+    const color_prev = ctx.fillStyle;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = '#9FD9FF';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = color_prev;
 }
