@@ -192,6 +192,110 @@ function circle() {
     };
 }
 
+function bucket_fill() {
+    canvas.onmousedown = function(e) {
+        img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        x = e.pageX - canvas.offsetLeft;
+        y = e.pageY - canvas.offsetTop;
+        //~ console.log(x,y);
+
+        color2change = ctx.getImageData(x, y, 1, 1).data;
+        new_color = hex2rgb(ctx.fillStyle);
+
+        console.log(color2change)
+        r=y*canvas.width*4 + x*4
+        console.log(img.data[r], img.data[r+1], img.data[r+2])
+        console.log('---')
+
+        //~ img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        //~ checked = Array(canvas.width).fill(Array(canvas.height).fill(false))
+        checked =Array(canvas.width).fill().map(()=>Array(canvas.height).fill(false))
+
+        fill(x, y);
+        //~ ctx.putImageData(img, x, y);
+    };
+
+    //~ function fill(x, y) {
+        //~ const red_pos = y * (canvas.width * 4) + x * 4
+        //~ console.log('Entra');
+        //~ if (!checked[x][y] &&
+            //~ img.data[red_pos] == color2change[0] &&
+            //~ img.data[red_pos+1] == color2change[1] &&
+            //~ img.data[red_pos+2] == color2change[2]) {
+
+            //~ img.data[red_pos] = new_color.r;
+            //~ img.data[red_pos+1] = new_color.g;
+            //~ img.data[red_pos+2] = new_color.b;
+            //~ img.data[red_pos+3] = 255;
+
+            //~ checked[x][y] = true;
+
+            //~ if (y > 1)
+                //~ fill(x, y-1);
+            //~ if (y < canvas.height-1)
+                //~ fill(x, y+1);
+
+            //~ if (x > 1) {
+                //~ console.log(x);
+                //~ fill(x-1, y);
+
+            //~ }
+            //~ if (x < canvas.width-1) {
+                //~ console.log(x);
+                //~ fill(x+1, y);
+            //~ }
+
+
+            //~ return true;
+        //~ }
+        //~ return false;
+    //~ };
+    function fill(x, y) {
+        //~ let pixel = ctx.getImageData(x, y, 1, 1)
+        //~ console.log('fill');
+        //~ console.log(x, x > 1, x < canvas.width-1, checked[x][y]);
+        //~ console.log('y');
+        //~ console.log(new_color);
+        if (!checked[x][y] &&
+            pixel.data[0] == color2change[0] &&
+            pixel.data[1] == color2change[1] &&
+            pixel.data[2] == color2change[2]) {
+            //~ console.log('Entra');
+
+            pixel.data[0] = new_color.r;
+            pixel.data[1] = new_color.g;
+            pixel.data[2] = new_color.b;
+            pixel.data[3] = 255;
+            console.log(ctx.getImageData(x, y, 1, 1).data);
+            //~ console.log(pixel.data);
+            //~ console.log(pixel);
+
+            ctx.putImageData(pixel, x, y);
+            console.log(ctx.getImageData(x, y, 1, 1).data);
+
+
+            checked[x][y] = true;
+
+            if (x > 1) {
+                //~ console.log(x);
+                fill(x-1, y);
+
+            }
+            if (x < canvas.width-1) {
+                //~ console.log(x);
+                fill(x+1, y);
+            }
+            if (y > 1)
+                fill(x, y-1);
+            if (y < canvas.height-1)
+                fill(x, y+1);
+        }
+        else
+            console.log(x, y, checked[x][y], checked[x]);
+    };
+
+}
+
 function change_color(new_color) {
     ctx.strokeStyle = new_color;
     ctx.fillStyle = new_color;
@@ -215,4 +319,15 @@ function draw(type, x1, y1, x2, y2) {
     }
     ctx.stroke(); // va a realizar una simple línea, no va a rellenar áreas
     ctx.closePath(); // cerramos la ruta
+}
+
+
+//~ https://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
+function hex2rgb(hex) {
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result ? {
+    r: parseInt(result[1], 16),
+    g: parseInt(result[2], 16),
+    b: parseInt(result[3], 16)
+  } : null;
 }
