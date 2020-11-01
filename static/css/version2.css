@@ -89,6 +89,12 @@
     background: blue;
 }
 
+
+#stroke_width {
+    width: 40%;
+    margin: 2%;
+}
+
 @media(max-width: 730px) {
 
 
