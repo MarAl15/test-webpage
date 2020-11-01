@@ -307,3 +307,12 @@ function clear_canvas() {
 
     ctx.fillStyle = color_prev;
 }
+
+
+
+// Change tool button style after click
+//https://stackoverflow.com/questions/31178653/how-to-keep-active-css-style-after-click-a-button
+$('.tool').on('click', function(){
+    $('.tool').removeClass('selected');
+    $(this).addClass('selected');
+});
