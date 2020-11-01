@@ -194,106 +194,65 @@ function circle() {
 
 function bucket_fill() {
     canvas.onmousedown = function(e) {
-        img = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        x = e.pageX - canvas.offsetLeft;
-        y = e.pageY - canvas.offsetTop;
-        //~ console.log(x,y);
+        let img = ctx.getImageData(0, 0, canvas.width, canvas.height),
+            open_set = [{x: e.pageX - canvas.offsetLeft,
+                         y: e.pageY - canvas.offsetTop}],
+            checked = Array(canvas.width).fill().map(()=>Array(canvas.height).fill(false));
 
-        color2change = ctx.getImageData(x, y, 1, 1).data;
-        new_color = hex2rgb(ctx.fillStyle);
+        //~ color2change = ctx.getImageData(x, y, 1, 1).data;
+        const red = open_set[0].y * (canvas.width * 4) + open_set[0].x * 4,
+              color2change = {r: img.data[red], g: img.data[red+1], b: img.data[red+2]},
+              new_color = hex2rgb(ctx.fillStyle),
+              size_width = canvas.width*4;
 
-        console.log(color2change)
-        r=y*canvas.width*4 + x*4
-        console.log(img.data[r], img.data[r+1], img.data[r+2])
-        console.log('---')
+        // Mientras haya elementos en la lista de abiertos
+        while (open_set.length > 0) {
+            // Extraer elemento de la lista de abiertos
+            pixel = open_set.pop();
 
-        //~ img = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        //~ checked = Array(canvas.width).fill(Array(canvas.height).fill(false))
-        checked =Array(canvas.width).fill().map(()=>Array(canvas.height).fill(false))
+            r = pixel.y * (canvas.width * 4) + pixel.x * 4;
 
-        fill(x, y);
-        //~ ctx.putImageData(img, x, y);
-    };
+            img.data[r] = new_color.r;
+            img.data[r+1] = new_color.g;
+            img.data[r+2] = new_color.b;
+            img.data[r+3] = 255;
 
-    //~ function fill(x, y) {
-        //~ const red_pos = y * (canvas.width * 4) + x * 4
-        //~ console.log('Entra');
-        //~ if (!checked[x][y] &&
-            //~ img.data[red_pos] == color2change[0] &&
-            //~ img.data[red_pos+1] == color2change[1] &&
-            //~ img.data[red_pos+2] == color2change[2]) {
+            checked[pixel.x][pixel.y] = true;
 
-            //~ img.data[red_pos] = new_color.r;
-            //~ img.data[red_pos+1] = new_color.g;
-            //~ img.data[red_pos+2] = new_color.b;
-            //~ img.data[red_pos+3] = 255;
+            if (pixel.x>0 && !checked[pixel.x-1][pixel.y] &&
+                img.data[r-4] == color2change.r &&
+                img.data[r-3] == color2change.g &&
+                img.data[r-2] == color2change.b) {
 
-            //~ checked[x][y] = true;
-
-            //~ if (y > 1)
-                //~ fill(x, y-1);
-            //~ if (y < canvas.height-1)
-                //~ fill(x, y+1);
-
-            //~ if (x > 1) {
-                //~ console.log(x);
-                //~ fill(x-1, y);
-
-            //~ }
-            //~ if (x < canvas.width-1) {
-                //~ console.log(x);
-                //~ fill(x+1, y);
-            //~ }
-
-
-            //~ return true;
-        //~ }
-        //~ return false;
-    //~ };
-    function fill(x, y) {
-        //~ let pixel = ctx.getImageData(x, y, 1, 1)
-        //~ console.log('fill');
-        //~ console.log(x, x > 1, x < canvas.width-1, checked[x][y]);
-        //~ console.log('y');
-        //~ console.log(new_color);
-        if (!checked[x][y] &&
-            pixel.data[0] == color2change[0] &&
-            pixel.data[1] == color2change[1] &&
-            pixel.data[2] == color2change[2]) {
-            //~ console.log('Entra');
-
-            pixel.data[0] = new_color.r;
-            pixel.data[1] = new_color.g;
-            pixel.data[2] = new_color.b;
-            pixel.data[3] = 255;
-            console.log(ctx.getImageData(x, y, 1, 1).data);
-            //~ console.log(pixel.data);
-            //~ console.log(pixel);
-
-            ctx.putImageData(pixel, x, y);
-            console.log(ctx.getImageData(x, y, 1, 1).data);
-
-
-            checked[x][y] = true;
-
-            if (x > 1) {
-                //~ console.log(x);
-                fill(x-1, y);
-
+                open_set.push({x: (pixel.x-1), y: pixel.y})
             }
-            if (x < canvas.width-1) {
-                //~ console.log(x);
-                fill(x+1, y);
+            if (pixel.x<canvas.width-1 && !checked[pixel.x+1][pixel.y] &&
+                img.data[r+4] == color2change.r &&
+                img.data[r+5] == color2change.g &&
+                img.data[r+6] == color2change.b) {
+
+                open_set.push({x: (pixel.x+1), y: pixel.y})
             }
-            if (y > 1)
-                fill(x, y-1);
-            if (y < canvas.height-1)
-                fill(x, y+1);
+
+            if (pixel.y>0 && !checked[pixel.x][pixel.y-1] &&
+                img.data[r-size_width] == color2change.r &&
+                img.data[r-size_width+1] == color2change.g &&
+                img.data[r-size_width+2] == color2change.b) {
+
+                open_set.push({x: pixel.x, y: (pixel.y-1)})
+            }
+            if (pixel.y<canvas.height-1 && !checked[pixel.x][pixel.y+1] &&
+                img.data[r+size_width] == color2change.r &&
+                img.data[r+size_width+1] == color2change.g &&
+                img.data[r+size_width+2] == color2change.b) {
+
+                open_set.push({x: pixel.x, y: (pixel.y+1)})
+            }
         }
-        else
-            console.log(x, y, checked[x][y], checked[x]);
-    };
 
+        // Actualizar canvas
+        ctx.putImageData(img, 0, 0);
+    };
 }
 
 function change_color(new_color) {
