@@ -9,7 +9,7 @@ document.getElementById("add-new-style-v2").onchange = function() {
 
     if (['image/jpeg', 'image/png'].indexOf(file.type) != -1)
         document.getElementById('span-style-v2').outerHTML =
-                '<img id="span-style" class="style-tmp" src="' + URL.createObjectURL(file) + '">'
+                '<img id="span-style-v2" class="style-tmp" src="' + URL.createObjectURL(file) + '">'
     else
         alert('File not supported. Allowed image types are: png, jpg, jpeg.')
 
@@ -311,6 +311,26 @@ function clear_canvas() {
     ctx.fillStyle = color_prev;
 }
 
+
+
+// Extract image from the canvas and display synthesized image
+function compute_fake_img() {
+    let dataURL = canvas.toDataURL("image/png");
+    document.getElementById('segmap').value = dataURL;
+
+    let fd = new FormData(document.forms["form-data"]),
+        xhr = new XMLHttpRequest({mozSystem: true});
+    xhr.open('POST', 'http://127.0.0.1:5000/demov2', true);
+    xhr.responseType = "blob";
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == XMLHttpRequest.DONE)
+            document.getElementById('fake-img').innerHTML = '<img class="dim-img" src="' + URL.createObjectURL(xhr.response) + '">';
+    }
+
+    xhr.onload = function() {};
+    xhr.send(fd);
+};
 
 
 // Change tool button style after click

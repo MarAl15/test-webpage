@@ -107,30 +107,19 @@
         </div>
     </div>
 
-    <form class="form-container" action="/demov2" method="POST" enctype="multipart/form-data">
+    <form class="form-container" action="/demov2" method="POST" enctype="multipart/form-data" name="form-data">
         <div class="sub-container">
-            <div>
-                {% if filename_segmap %}
-                    <img id="span-segmap" class="dim-img" src="{{ url_for('display_image', filename=filename_segmap) }}">
-                {% else %}
-                    <canvas id="paint-segmap" class="dim-img">
-                        Your browser does not support the HTML canvas tag.
-                    </canvas>
-                {% endif %}
-            </div>
-<!--
+            <canvas id="paint-segmap" class="dim-img">
+                Your browser does not support the HTML canvas tag.
+            </canvas>
 
-            <input type="file" class="no-display" id="add-new-segmap-v2" name="file_segmap">
--->
+            <input type="hidden" id="segmap" name="file_segmap">
         </div>
 
         <div class="sub-container">
             <div class="add style display-text" id="add-style-v2">
-                {% if filename_style %}
-                    <img id="span-style-v2" class="style" src="{{ url_for('display_image', filename=filename_style) }}">
-                {% else %}
-                    <span id="span-style-v2"><i class="fa fa-camera" style="font-size:36px"></i></span>
-                {% endif %}
+                <span id="span-style-v2"><i class="fa fa-camera" style="font-size:36px"></i></span>
+
                 <div class="content-style">
                     <div class="text">Click to upload style image.</div>
                 </div>
@@ -138,7 +127,7 @@
             <input type="file" class="no-display" id="add-new-style-v2" name="file_style">
 
             <div class="compute-container">
-                <button type="submit" class="compute-photo" data-toggle="tooltip" data-placement="bottom" title="Generate image">
+                <button type="button" class="compute-photo" onclick="compute_fake_img()" data-toggle="tooltip" data-placement="bottom" title="Generate image">
                    <i id="icon-arrow"></i>
                 </button>
             </div>
@@ -147,11 +136,7 @@
 
     <div class="sub-container">
         <div class="base dim-img">
-            {% if filename_fake %}
-                <img class="dim-img" src="{{ url_for('display_image', filename=filename_fake) }}">
-            {% else %}
-                <span><i id="icon-synimg"></i></span>
-            {% endif %}
+            <span id="fake-img"><i id="icon-synimg"></i></span>
         </div>
     </div>
 </div>
