@@ -12,7 +12,7 @@ document.getElementById("add-new-segmap").onchange = function() {
 
     if (['image/jpeg', 'image/png'].indexOf(file.type) != -1)
         document.getElementById('span-segmap').outerHTML =
-                '<img id="span-segmap" class="segmap-tmp" src="' + URL.createObjectURL(file) + '">'
+                '<img id="span-segmap" class="dim-img" src="' + URL.createObjectURL(file) + '">'
     else
         alert('File not supported. Allowed image types are: png, jpg, jpeg.')
 
@@ -27,4 +27,21 @@ document.getElementById("add-new-style").onchange = function() {
     else
         alert('File not supported. Allowed image types are: png, jpg, jpeg.')
 
+};
+
+
+// Display synthesized image
+function compute_fake_img() {
+    let fd = new FormData(document.forms["form-data"]),
+        xhr = new XMLHttpRequest({mozSystem: true});
+    xhr.open('POST', 'http://127.0.0.1:5000/demo', true);
+    xhr.responseType = "blob";
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == XMLHttpRequest.DONE)
+            document.getElementById('fake-img').innerHTML = '<img class="dim-img" src="' + URL.createObjectURL(xhr.response) + '">';
+    }
+
+    xhr.onload = function() {};
+    xhr.send(fd);
 };
