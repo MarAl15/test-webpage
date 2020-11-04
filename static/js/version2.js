@@ -203,17 +203,20 @@ function bucket_fill() {
             checked = Array(canvas.width).fill().map(()=>Array(canvas.height).fill(false));
 
         //~ color2change = ctx.getImageData(x, y, 1, 1).data;
-        const red = open_set[0].y * (canvas.width * 4) + open_set[0].x * 4,
-              color2change = {r: img.data[red], g: img.data[red+1], b: img.data[red+2]},
+        const red = (open_set[0].y * canvas.width + open_set[0].x) * 4,
               new_color = hex2rgb(ctx.fillStyle),
               size_width = canvas.width*4;
+
+        color2change = img.data.slice(red, red+3);
+        //~ range_sq = 300*300;//range * range;
+        range_sq = 200*200;
 
         // Mientras haya elementos en la lista de abiertos
         while (open_set.length > 0) {
             // Extraer elemento de la lista de abiertos
             pixel = open_set.pop();
 
-            r = pixel.y * (canvas.width * 4) + pixel.x * 4;
+            r = (pixel.y * canvas.width + pixel.x) * 4;
 
             img.data[r] = new_color.r;
             img.data[r+1] = new_color.g;
@@ -223,44 +226,41 @@ function bucket_fill() {
             checked[pixel.x][pixel.y] = true;
 
             if (pixel.x>0 && !checked[pixel.x-1][pixel.y] &&
-                img.data[r-4] == color2change.r &&
-                img.data[r-3] == color2change.g &&
-                img.data[r-2] == color2change.b) {
+                colors_match(img.data.slice(r-4, r-1)))
+                open_set.push({x: (pixel.x-1), y: pixel.y});
 
-                open_set.push({x: (pixel.x-1), y: pixel.y})
-            }
             if (pixel.x<canvas.width-1 && !checked[pixel.x+1][pixel.y] &&
-                img.data[r+4] == color2change.r &&
-                img.data[r+5] == color2change.g &&
-                img.data[r+6] == color2change.b) {
-
-                open_set.push({x: (pixel.x+1), y: pixel.y})
-            }
+                colors_match(img.data.slice(r+4, r+7)))
+                open_set.push({x: (pixel.x+1), y: pixel.y});
 
             if (pixel.y>0 && !checked[pixel.x][pixel.y-1] &&
-                img.data[r-size_width] == color2change.r &&
-                img.data[r-size_width+1] == color2change.g &&
-                img.data[r-size_width+2] == color2change.b) {
+                colors_match(img.data.slice(r-size_width, r-size_width + 3)))
+                open_set.push({x: pixel.x, y: (pixel.y-1)});
 
-                open_set.push({x: pixel.x, y: (pixel.y-1)})
-            }
             if (pixel.y<canvas.height-1 && !checked[pixel.x][pixel.y+1] &&
-                img.data[r+size_width] == color2change.r &&
-                img.data[r+size_width+1] == color2change.g &&
-                img.data[r+size_width+2] == color2change.b) {
+                colors_match(img.data.slice(r+size_width, r+size_width + 3)))
+                open_set.push({x: pixel.x, y: (pixel.y+1)});
 
-                open_set.push({x: pixel.x, y: (pixel.y+1)})
-            }
         }
 
         // Actualizar canvas
         ctx.putImageData(img, 0, 0);
     };
+
+    function colors_match(color_curr) {
+        //https://stackoverflow.com/questions/53077955/how-do-i-do-flood-fill-on-the-html-canvas-in-javascript
+        const dr = color_curr[0] - color2change[0],
+              dg = color_curr[1] - color2change[1],
+              db = color_curr[2] - color2change[2];
+        return dr * dr + dg * dg + db * db < range_sq;
+    }
 }
 
 function change_color(new_color) {
-    ctx.strokeStyle = new_color;
     ctx.fillStyle = new_color;
+
+    const rgb_color = hex2rgb(ctx.fillStyle);
+    ctx.strokeStyle = `rgba(${rgb_color.r}, ${rgb_color.g}, ${rgb_color.b}, 255)`;
 
     document.getElementById("color-selected").style.background = new_color;
 }
