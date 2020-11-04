@@ -256,11 +256,16 @@ function bucket_fill() {
     }
 }
 
-function change_color(new_color) {
-    ctx.fillStyle = new_color;
+function eyedropper() {
+    canvas.onmousedown = function(e) {
+        new_color = ctx.getImageData(e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop, 1, 1).data;
+        change_color(`rgba(${new_color[0]}, ${new_color[1]}, ${new_color[2]}, 255)`);
+    }
+}
 
-    const rgb_color = hex2rgb(ctx.fillStyle);
-    ctx.strokeStyle = `rgba(${rgb_color.r}, ${rgb_color.g}, ${rgb_color.b}, 255)`;
+function change_color(new_color) {
+    ctx.strokeStyle = new_color;
+    ctx.fillStyle = new_color;
 
     document.getElementById("color-selected").style.background = new_color;
 }
