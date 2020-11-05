@@ -114,13 +114,171 @@ function line() {
         if (drawing) {
             ctx.putImageData(img, 0, 0);
 
-            draw('line', x, y,
-                  e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop);
+            //~ console.log(x, y, e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop)
+            //~ console.log('eoeoeooe')
+            //~ console.log(getPixelsOnLine(x, y, e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop))
+
+            //~ draw('line', x, y,
+                  //~ e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop);
+            plotLineWidth(x, y,
+                          e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop);
 
             drawing = false;
             x = 0, y = 0;
         }
     };
+}
+
+
+/*
+ *  Plot a line of width ctx.lineWidth.
+ */
+function plotLineWidth(x0, y0, x1, y1) {
+    const dx = Math.abs(x1-x0), sx = x0 < x1 ? 1 : -1,
+          dy = Math.abs(y1-y0), sy = y0 < y1 ? 1 : -1;
+
+    // Error value e_xy
+    let err = dx - dy,
+        x = x0, y = y0,
+        end = false;
+
+    draw_line = (x, y, err, sx, sy, dx, dy) => {
+        setPixelColor(x, y);
+
+        let et = 2 * err
+        // e_xy+e_x > 0
+        if (et >= -dy) {
+            console.log('if 1');
+            err -= dy; x += sx;
+        }
+
+        // e_xy+e_y < 0
+        if (et <= dx) {
+            console.log('if 2');
+            err += dx; y += sy;
+        }
+
+        return [x, y, err];
+    }
+
+    if (ctx.lineWidth == 1) {
+        while (x != x1 || y != y1){
+            let data = draw_line(x, y, err, sx, sy, dx, dy);
+            x = data[0];
+            y = data[1];
+            err = data[2];
+        }
+        setPixelColor(x1, y1);
+    }
+    else {
+        const ed = (dx + dy == 0) ? 1 : Math.sqrt(dx*dx + dy*dy),
+              wd = (ctx.lineWidth+1)/2;
+              //~ wd = ctx.lineWidth;
+
+        while (!end) {
+            setPixelColor(x, y);
+
+            if (x==x1 && y==y1)
+                end = true;
+            let et = err,
+                xt = x-wd;
+            if (2*et >= -dx) {
+                let sx_n = sy, sy_n = -sx,
+                    x_n = x, y_n = y,
+                    dx_n = -dy, dy_n = dx,
+                    err_n = dx_n + dy_n,
+                    e_n = err_n;
+                for (let i=0, y_n=y; i<wd; i++) {
+                    //~ let data = draw_line(x_n, y_n, err_n, sx_n, sy_n, dx_n, dy_n);
+                    //~ x_n = data[0];
+                    //~ y_n = data[1];
+                    //~ err_n = data[2];
+                    //~ err_n = data[2];
+
+                    setPixelColor(x_n, y_n);
+
+                    let e_n = 2 * err_n;
+
+                    // e_xy+e_y < 0
+                    //~ if (e_n <= dx) {
+                        //~ console.log('if 2');
+                        //~ err += dx;
+                        y_n += sy_n;
+                        x_n += sx_n;
+                    //~ }
+                }
+
+                sx_n = -sy; sy_n = sx;
+                x_n = x; y_n = y;
+                err_n = dx_n - dy_n;
+                e_n = err_n;
+                for (let i=0, yt=y; i<wd; i++) {
+                    let data = draw_line(x_n, y_n, err_n, sx_n, sy_n, dx_n, dy_n);
+                    x_n = data[0];
+                    y_n = data[1];
+                    err_n = data[2];
+                }
+
+                //~ if ()
+                    //~ end = true;
+                //~ else {
+                    et = err;
+                    err -= dy; x += sx;
+                //~ }
+            }
+            if (2*et <= dy) {
+                //~ let sx_n = sy, sy_n = -sx,
+                    //~ x_n = x, y_n = y,
+                    //~ dx_n = dy, dy_n = -dx,
+                    //~ err_n = dx_n + dy_n,
+                    //~ e_n = err_n;
+                //~ for (let i=0, y_n=y; i<wd; i++) {
+                    //~ let data = draw_line(x_n, y_n, err_n, sx_n, sy_n, dx_n, dy_n);
+                    //~ x_n = data[0];
+                    //~ y_n = data[1];
+                    //~ err_n = data[2];
+                //~ }
+
+                //~ sx_n = -sy; sy_n = sx;
+                //~ x_n = x; y_n = y;
+                //~ err_n = dx_n - dy_n;
+                //~ e_n = err_n;
+                //~ for (let i=0, yt=y; i<wd; i++) {
+                    //~ let data = draw_line(x_n, y_n, err_n, sx_n, sy_n, dx_n, dy_n);
+                    //~ x_n = data[0];
+                    //~ y_n = data[1];
+                    //~ err_n = data[2];
+                //~ }
+
+                //~ if (y==y1)
+                    //~ end = true;
+                //~ else {
+                    err += dx; y += sy;
+                //~ }
+
+            }
+
+
+        }
+    }
+
+    // Actualizar canvas
+    ctx.putImageData(img, 0, 0);
+}
+
+
+
+function setPixelColor(x, y) {
+    if (x >= 0 && x < img.width && y >= 0 && y < img.height ){
+        const r = (x + y * img.width) * 4,
+              color = hex2rgb(ctx.strokeStyle);
+        //~ console.log(x, y, ind)
+
+        img.data[r] = color.r;
+        img.data[r+1] = color.g;
+        img.data[r+2] = color.b;
+        img.data[r+3] = 255;
+    }
 }
 
 function rectangle() {
