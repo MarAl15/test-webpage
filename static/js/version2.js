@@ -90,7 +90,7 @@ function pencil() {
 function line() {
     // Clica
     canvas.onmousedown = function(e) {
-        img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        prev_img = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
         // conseguimos la coordenadas correspondientes en el canvas
         x = e.pageX - canvas.offsetLeft;
@@ -102,26 +102,24 @@ function line() {
     // Mueve el ratón
     canvas.onmousemove = function(e) {
         if (drawing) {
-            ctx.putImageData(img, 0, 0);
+            ctx.putImageData(prev_img, 0, 0);
 
-            draw('line', x, y,
-                  e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop);
+            //~ draw('line', x, y,
+                  //~ e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop);
+            plotLine(x, y,
+                     e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop);
         }
     };
 
     // Quita el click del ratón
     canvas.onmouseup = function(e) {
         if (drawing) {
-            ctx.putImageData(img, 0, 0);
-
-            //~ console.log(x, y, e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop)
-            //~ console.log('eoeoeooe')
-            //~ console.log(getPixelsOnLine(x, y, e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop))
+            ctx.putImageData(prev_img, 0, 0);
 
             //~ draw('line', x, y,
                   //~ e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop);
-            plotLineWidth(x, y,
-                          e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop);
+            plotLine(x, y,
+                     e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop);
 
             drawing = false;
             x = 0, y = 0;
@@ -133,152 +131,157 @@ function line() {
 /*
  *  Plot a line of width ctx.lineWidth.
  */
-function plotLineWidth(x0, y0, x1, y1) {
-    const dx = Math.abs(x1-x0), sx = x0 < x1 ? 1 : -1,
-          dy = Math.abs(y1-y0), sy = y0 < y1 ? 1 : -1;
+function plotLine(x0, y0, x1, y1) {
+    img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const line_pixels = [],
+          new_color = hex2rgb(ctx.strokeStyle);
+    const savePixel = (x, y) => {
+        if (!line_pixels.some(function(p){return p.x == x && p.y == y})) {
+            line_pixels.push({x: x, y: y});
+            return true;
+        }
+        return false;
+    }
+    const drawLine = (x0, y0, x1, y1, perp=false) => {
+        const dx = Math.abs(x1-x0), sx = x0 < x1 ? 1 : -1,
+              dy = Math.abs(y1-y0), sy = y0 < y1 ? 1 : -1,
+              len = perp ? ctx.lineWidth/2 : -1;
 
-    // Error value e_xy
-    let err = dx - dy,
-        x = x0, y = y0,
-        end = false;
+        let x=x0, y = y0,
+            D, D0_inc, D1_inc,
+            i = 0;
 
-    draw_line = (x, y, err, sx, sy, dx, dy) => {
-        setPixelColor(x, y);
-
-        let et = 2 * err
-        // e_xy+e_x > 0
-        if (et >= -dy) {
-            console.log('if 1');
-            err -= dy; x += sx;
+        if (dx > dy) {
+            D = 2 * dy - dx;
+            D0_inc = 2 * dy;
+            D1_inc = 2 * (dy - dx);
+        }
+        else {
+            D = 2 * dx - dy;
+            D0_inc = 2 * dx;
+            D1_inc = 2 * (dx - dy);
         }
 
-        // e_xy+e_y < 0
-        if (et <= dx) {
-            console.log('if 2');
-            err += dx; y += sy;
+        while (((!perp && (x != x1 || y != y1)) || ++i<len)){
+            if (savePixel(x, y))
+                setPixelColorXY(x, y, new_color);
+
+            if (D>=0) {
+                y += sy; x += sx;
+                D += D1_inc;
+            }
+            else {
+                if (dx > dy) x += sx;
+                else y += sy;
+                D += D0_inc;
+            }
         }
 
-        return [x, y, err];
+        if (!perp && savePixel(x1, y1))
+            setPixelColorXY(x1, y1, new_color);
+
+        return {x: x, y: y};
     }
 
     if (ctx.lineWidth == 1) {
-        while (x != x1 || y != y1){
-            let data = draw_line(x, y, err, sx, sy, dx, dy);
-            x = data[0];
-            y = data[1];
-            err = data[2];
-        }
-        setPixelColor(x1, y1);
+        drawLine(x0, y0, x1, y1);
+
+        // Actualizar canvas
+        ctx.putImageData(img, 0, 0);
     }
     else {
-        const ed = (dx + dy == 0) ? 1 : Math.sqrt(dx*dx + dy*dy),
-              wd = (ctx.lineWidth+1)/2;
-              //~ wd = ctx.lineWidth;
+        /* Draw shape line */
+        const dx = x1-x0,
+              dy = y1-y0;
 
-        while (!end) {
-            setPixelColor(x, y);
+        // Normal lines
+        const pixel2 = drawLine(x0, y0, x0 + dy, y0 - dx, perp=true),
+              pixel3 = drawLine(x0, y0, x0 - dy, y0 + dx, perp=true),
+              pixel4 = drawLine(x1, y1, x1 + dy, y1 - dx, perp=true),
+              pixel5 = drawLine(x1, y1, x1 - dy, y1 + dx, perp=true);
 
-            if (x==x1 && y==y1)
-                end = true;
-            let et = err,
-                xt = x-wd;
-            if (2*et >= -dx) {
-                let sx_n = sy, sy_n = -sx,
-                    x_n = x, y_n = y,
-                    dx_n = -dy, dy_n = dx,
-                    err_n = dx_n + dy_n,
-                    e_n = err_n;
-                for (let i=0, y_n=y; i<wd; i++) {
-                    //~ let data = draw_line(x_n, y_n, err_n, sx_n, sy_n, dx_n, dy_n);
-                    //~ x_n = data[0];
-                    //~ y_n = data[1];
-                    //~ err_n = data[2];
-                    //~ err_n = data[2];
+        drawLine(pixel2.x, pixel2.y, pixel4.x, pixel4.y);
+        drawLine(pixel3.x, pixel3.y, pixel5.x, pixel5.y);
 
-                    setPixelColor(x_n, y_n);
-
-                    let e_n = 2 * err_n;
-
-                    // e_xy+e_y < 0
-                    //~ if (e_n <= dx) {
-                        //~ console.log('if 2');
-                        //~ err += dx;
-                        y_n += sy_n;
-                        x_n += sx_n;
-                    //~ }
-                }
-
-                sx_n = -sy; sy_n = sx;
-                x_n = x; y_n = y;
-                err_n = dx_n - dy_n;
-                e_n = err_n;
-                for (let i=0, yt=y; i<wd; i++) {
-                    let data = draw_line(x_n, y_n, err_n, sx_n, sy_n, dx_n, dy_n);
-                    x_n = data[0];
-                    y_n = data[1];
-                    err_n = data[2];
-                }
-
-                //~ if ()
-                    //~ end = true;
-                //~ else {
-                    et = err;
-                    err -= dy; x += sx;
-                //~ }
-            }
-            if (2*et <= dy) {
-                //~ let sx_n = sy, sy_n = -sx,
-                    //~ x_n = x, y_n = y,
-                    //~ dx_n = dy, dy_n = -dx,
-                    //~ err_n = dx_n + dy_n,
-                    //~ e_n = err_n;
-                //~ for (let i=0, y_n=y; i<wd; i++) {
-                    //~ let data = draw_line(x_n, y_n, err_n, sx_n, sy_n, dx_n, dy_n);
-                    //~ x_n = data[0];
-                    //~ y_n = data[1];
-                    //~ err_n = data[2];
-                //~ }
-
-                //~ sx_n = -sy; sy_n = sx;
-                //~ x_n = x; y_n = y;
-                //~ err_n = dx_n - dy_n;
-                //~ e_n = err_n;
-                //~ for (let i=0, yt=y; i<wd; i++) {
-                    //~ let data = draw_line(x_n, y_n, err_n, sx_n, sy_n, dx_n, dy_n);
-                    //~ x_n = data[0];
-                    //~ y_n = data[1];
-                    //~ err_n = data[2];
-                //~ }
-
-                //~ if (y==y1)
-                    //~ end = true;
-                //~ else {
-                    err += dx; y += sy;
-                //~ }
-
-            }
-
-
-        }
+        /* Fill line */
+        fillTo(Math.round((x0+x1)/2), Math.round((y0+y1)/2),
+               hex2rgb(ctx.strokeStyle), line_pixels);
     }
-
-    // Actualizar canvas
-    ctx.putImageData(img, 0, 0);
 }
 
 
 
-function setPixelColor(x, y) {
+function setPixelColorXY(x, y, color) {
     if (x >= 0 && x < img.width && y >= 0 && y < img.height ){
-        const r = (x + y * img.width) * 4,
-              color = hex2rgb(ctx.strokeStyle);
-        //~ console.log(x, y, ind)
+        const r = (x + y * img.width) * 4;
 
         img.data[r] = color.r;
         img.data[r+1] = color.g;
         img.data[r+2] = color.b;
         img.data[r+3] = 255;
     }
+}
+
+function setPixelColor(r, color) {
+    if (r >= 0 && r < img.width*img.height*4){
+        img.data[r] = color.r;
+        img.data[r+1] = color.g;
+        img.data[r+2] = color.b;
+        img.data[r+3] = 255;
+    }
+}
+
+function colorMatch(r, color) {
+    if (r >= 0 && r < img.width*img.height*4){
+        return img.data[r] == color.r &&
+               img.data[r+1] == color.g &&
+               img.data[r+2] == color.b;
+    }
+    return -1;
+}
+
+function fillTo(x, y, end_color, shape_pixels) {
+    let open_set = [{x: x, y: y}],
+        checked = Array(canvas.width).fill().map(()=>Array(canvas.height).fill(false));
+
+    const red = (open_set[0].y * canvas.width + open_set[0].x) * 4,
+          new_color = hex2rgb(ctx.fillStyle);
+
+    for (pixel of shape_pixels)
+        checked[pixel.x][pixel.y] = true;
+
+    // Mientras haya elementos en la lista de abiertos
+    while (open_set.length > 0) {
+        // Extraer elemento de la lista de abiertos
+        let pixel = open_set.pop();
+
+        r = (pixel.y * canvas.width + pixel.x) * 4;
+
+        const same_color = colorMatch(r, end_color);
+        if (!checked[pixel.x][pixel.y] && (!same_color ||
+            (same_color && !shape_pixels.some(function(p){return p.x == pixel.x && p.y == pixel.y})))){
+
+            if (!same_color)
+                setPixelColor(r, new_color);
+
+            if (pixel.x>0 && !checked[pixel.x-1][pixel.y])
+                open_set.push({x: (pixel.x-1), y: pixel.y});
+
+            if (pixel.x<canvas.width-1 && !checked[pixel.x+1][pixel.y])
+                open_set.push({x: (pixel.x+1), y: pixel.y});
+
+            if (pixel.y>0 && !checked[pixel.x][pixel.y-1])
+                open_set.push({x: pixel.x, y: (pixel.y-1)});
+
+            if (pixel.y<canvas.height-1 && !checked[pixel.x][pixel.y+1])
+                open_set.push({x: pixel.x, y: (pixel.y+1)});
+        }
+
+        checked[pixel.x][pixel.y] = true;
+    }
+
+    // Actualizar canvas
+    ctx.putImageData(img, 0, 0);
 }
 
 function rectangle() {
