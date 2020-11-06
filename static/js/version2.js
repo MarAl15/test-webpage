@@ -446,63 +446,51 @@ function plotCircle(xc, yc, radius) {
 
 function bucket_fill() {
     canvas.onmousedown = function(e) {
-        let img = ctx.getImageData(0, 0, canvas.width, canvas.height),
-            open_set = [{x: e.pageX - canvas.offsetLeft,
+        img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+        let open_set = [{x: e.pageX - canvas.offsetLeft,
                          y: e.pageY - canvas.offsetTop}],
             checked = Array(canvas.width).fill().map(()=>Array(canvas.height).fill(false));
 
-        //~ color2change = ctx.getImageData(x, y, 1, 1).data;
         const red = (open_set[0].y * canvas.width + open_set[0].x) * 4,
+              color2change = {r: img.data[red], g: img.data[red+1], b: img.data[red+2]},
               new_color = hex2rgb(ctx.fillStyle),
               size_width = canvas.width*4;
-
-        color2change = img.data.slice(red, red+3);
-        //~ range_sq = 300*300;//range * range;
-        range_sq = 200*200;
+        // color2change = img.data.slice(red, red+3);
 
         // Mientras haya elementos en la lista de abiertos
         while (open_set.length > 0) {
             // Extraer elemento de la lista de abiertos
             pixel = open_set.pop();
 
-            r = (pixel.y * canvas.width + pixel.x) * 4;
+            if (!checked[pixel.x][pixel.y]) {
+                const r = (pixel.y * canvas.width + pixel.x) * 4;
+                setPixelColor(r, new_color);
 
-            img.data[r] = new_color.r;
-            img.data[r+1] = new_color.g;
-            img.data[r+2] = new_color.b;
-            img.data[r+3] = 255;
+                checked[pixel.x][pixel.y] = true;
 
-            checked[pixel.x][pixel.y] = true;
+                if (pixel.x>0 && !checked[pixel.x-1][pixel.y] &&
+                    colorMatch(r-4, color2change))
+                    open_set.push({x: (pixel.x-1), y: pixel.y});
 
-            if (pixel.x>0 && !checked[pixel.x-1][pixel.y] &&
-                colors_match(img.data.slice(r-4, r-1)))
-                open_set.push({x: (pixel.x-1), y: pixel.y});
+                if (pixel.x<canvas.width-1 && !checked[pixel.x+1][pixel.y] &&
+                    colorMatch(r+4, color2change))
+                    open_set.push({x: (pixel.x+1), y: pixel.y});
 
-            if (pixel.x<canvas.width-1 && !checked[pixel.x+1][pixel.y] &&
-                colors_match(img.data.slice(r+4, r+7)))
-                open_set.push({x: (pixel.x+1), y: pixel.y});
+                if (pixel.y>0 && !checked[pixel.x][pixel.y-1] &&
+                    colorMatch(r-size_width, color2change))
+                    open_set.push({x: pixel.x, y: (pixel.y-1)});
 
-            if (pixel.y>0 && !checked[pixel.x][pixel.y-1] &&
-                colors_match(img.data.slice(r-size_width, r-size_width + 3)))
-                open_set.push({x: pixel.x, y: (pixel.y-1)});
+                if (pixel.y<canvas.height-1 && !checked[pixel.x][pixel.y+1] &&
+                    colorMatch(r+size_width, color2change))
+                    open_set.push({x: pixel.x, y: (pixel.y+1)});
 
-            if (pixel.y<canvas.height-1 && !checked[pixel.x][pixel.y+1] &&
-                colors_match(img.data.slice(r+size_width, r+size_width + 3)))
-                open_set.push({x: pixel.x, y: (pixel.y+1)});
-
+            }
         }
 
         // Actualizar canvas
         ctx.putImageData(img, 0, 0);
     };
-
-    function colors_match(color_curr) {
-        //https://stackoverflow.com/questions/53077955/how-do-i-do-flood-fill-on-the-html-canvas-in-javascript
-        const dr = color_curr[0] - color2change[0],
-              dg = color_curr[1] - color2change[1],
-              db = color_curr[2] - color2change[2];
-        return dr * dr + dg * dg + db * db < range_sq;
-    }
 }
 
 function eyedropper() {
