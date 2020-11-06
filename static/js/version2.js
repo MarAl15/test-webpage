@@ -346,7 +346,7 @@ function plotRectangle(x0, y0, width, height) {
 function circle() {
     // Clica
     canvas.onmousedown = function(e) {
-        img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        prev_img = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
         // conseguimos la coordenadas correspondientes en el canvas
         x = e.pageX - canvas.offsetLeft;
@@ -358,25 +358,90 @@ function circle() {
     // Mueve el ratón
     canvas.onmousemove = function(e) {
         if (drawing) {
-            ctx.putImageData(img, 0, 0);
+            ctx.putImageData(prev_img, 0, 0);
 
-            draw('circle', x, y,
-                  e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop);
+            //~ draw('circle', x, y,
+                  //~ e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop);
+            const x_curr = e.pageX - canvas.offsetLeft,
+                  y_curr = e.pageY - canvas.offsetTop;
+
+            plotCircle(Math.round((x+x_curr)/2), Math.round((y+y_curr)/2), // center
+                       Math.round(Math.hypot(x_curr-x, y_curr-y)/2)); // radius
         }
     };
 
     // Quita el click del ratón
     canvas.onmouseup = function(e) {
         if (drawing) {
-            ctx.putImageData(img, 0, 0);
+            ctx.putImageData(prev_img, 0, 0);
 
-            draw('circle', x, y,
-                  e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop);
+            //~ draw('circle', x, y,
+                  //~ e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop);
+            const x_curr = e.pageX - canvas.offsetLeft,
+                  y_curr = e.pageY - canvas.offsetTop;
+
+            plotCircle(Math.round((x+x_curr)/2), Math.round((y+y_curr)/2), // center
+                       Math.round(Math.hypot(x_curr-x, y_curr-y)/2)); // radius
 
             drawing = false;
             x = 0, y = 0;
         }
     };
+}
+
+// https://www.geeksforgeeks.org/bresenhams-circle-drawing-algorithm/
+function plotCircle(xc, yc, radius) {
+    img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const circle_pixels = [],
+          new_color = hex2rgb(ctx.strokeStyle);
+    const savePixel = (x, y) => {
+        circle_pixels.push({x: x, y: y});
+    }
+
+    // Function to draw all other 7 pixels present at symmetric position
+    const drawSymmetricPoints = (x, y) => {
+        setPixelColorXY(xc+x, yc+y, new_color);
+        setPixelColorXY(xc-x, yc+y, new_color);
+        setPixelColorXY(xc+x, yc-y, new_color);
+        setPixelColorXY(xc-x, yc-y, new_color);
+        setPixelColorXY(xc+y, yc+x, new_color);
+        setPixelColorXY(xc-y, yc+x, new_color);
+        setPixelColorXY(xc+y, yc-x, new_color);
+        setPixelColorXY(xc-y, yc-x, new_color);
+
+        savePixel(xc+x, yc+y);
+        savePixel(xc-x, yc+y);
+        savePixel(xc+x, yc-y);
+        savePixel(xc-x, yc-y);
+        savePixel(xc+y, yc+x);
+        savePixel(xc-y, yc+x);
+        savePixel(xc+y, yc-x);
+        savePixel(xc-y, yc-x);
+    }
+
+    /* Draw circle */
+    let sx = 0, sy = radius,
+        D = 3 - 2 * radius;
+    drawSymmetricPoints(sx, sy);
+
+    while (sy >= sx) {
+        // For each pixel, draw all eight pixels
+        ++sx;
+
+        // Check for decision parameter and correspondingly
+        // update D, sx, sy
+        if (D > 0){
+            --sy;
+            D += 4 * (sx - sy) + 10;
+        }
+        else
+            D += 4 * sx + 6;
+        drawSymmetricPoints(sx, sy);
+    }
+
+    /* Fill circle */
+    fillTo(xc, yc,
+           hex2rgb(ctx.strokeStyle), circle_pixels);
 }
 
 function bucket_fill() {
