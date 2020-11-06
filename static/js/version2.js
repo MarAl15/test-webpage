@@ -290,7 +290,7 @@ function fillTo(x, y, end_color, shape_pixels) {
 function rectangle() {
     // Clica
     canvas.onmousedown = function(e) {
-        img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        prev_img = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
         // conseguimos la coordenadas correspondientes en el canvas
         x = e.pageX - canvas.offsetLeft;
@@ -302,25 +302,45 @@ function rectangle() {
     // Mueve el ratón
     canvas.onmousemove = function(e) {
         if (drawing) {
-            ctx.putImageData(img, 0, 0);
+            ctx.putImageData(prev_img, 0, 0);
 
-            draw('rectangle', x, y,
-                  e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop);
+            //~ draw('rectangle', x, y,
+                  //~ e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop);
+            plotRectangle(x, y,
+                          e.pageX - canvas.offsetLeft - x, e.pageY - canvas.offsetTop - y);
         }
     };
 
     // Quita el click del ratón
     canvas.onmouseup = function(e) {
         if (drawing) {
-            ctx.putImageData(img, 0, 0);
+            ctx.putImageData(prev_img, 0, 0);
 
-            draw('rectangle', x, y,
-                  e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop);
+            //~ draw('rectangle', x, y,
+                  //~ e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop);
+            //~ ctx.rect(x1, y1, x2-x1, y2-y1);
+
+            plotRectangle(x, y,
+                          e.pageX - canvas.offsetLeft - x, e.pageY - canvas.offsetTop - y);
 
             drawing = false;
             x = 0, y = 0;
         }
     };
+}
+
+function plotRectangle(x0, y0, width, height) {
+    img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const new_color = hex2rgb(ctx.strokeStyle),
+          si = width > 0 ? 1 : -1,
+          sj = height > 0 ? 1 : -1;
+
+    for (let i=0; i!=width+si; i+=si)
+        for (let j=0; j!=height+sj; j+=sj)
+            setPixelColorXY(x0+i, y0+j, new_color);
+
+    // Update canvas
+    ctx.putImageData(img, 0, 0);
 }
 
 function circle() {
