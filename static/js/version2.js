@@ -69,7 +69,8 @@ function pencil() {
 
             x = e.pageX - canvas.offsetLeft;
             y = e.pageY - canvas.offsetTop;
-            draw('line', x_prev, y_prev, x, y);
+            //~ draw('line', x_prev, y_prev, x, y);
+            plotLine(x_prev, y_prev, x, y);
         }
     };
 
@@ -78,8 +79,10 @@ function pencil() {
         if (drawing) {
             // x,y -> punto inicial
             // -> puntos en este momoento donde se encuentra el ratón, donde llegó
-            draw('line', x, y,
-                  e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop);
+            //~ draw('line', x, y,
+                  //~ e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop);
+            plotLine(x, y,
+                     e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop);
 
             drawing = false;
             x = 0, y = 0;
