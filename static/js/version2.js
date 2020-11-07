@@ -18,10 +18,69 @@ document.getElementById("add-new-style-v2").onchange = function() {
 /*
  * PAINT
  */
+ class Changes {
+    constructor(max_size=50) {
+        this.max_size = max_size;
+        this.previous_changes = [];
+        this.tmp_changes = [];
+    }
+
+    push(dict) {
+        if (this.isNotEmptyTmpChanges())
+            this.tmp_changes = [];
+
+        if (this.previous_changes.length == this.max_size)
+            this.previous_changes.splice(0, 1); // Removes the first element
+
+        this.previous_changes.push(dict);
+    }
+
+    popPreviousChanges() {
+        if (this.isNotEmptyPreviousChanges()) {
+            let change = this.previous_changes.pop();
+            this.tmp_changes.push(change);
+
+            return change;
+        }
+        return {};
+    }
+    popTmpChanges() {
+        if (this.isNotEmptyTmpChanges()) {
+            let change = this.tmp_changes.pop();
+            this.previous_changes.push(change);
+
+            return change;
+        }
+        return {};
+    }
+
+
+    get sizePreviousChanges() {
+        return this.previous_changes.length;
+    }
+    isNotEmptyPreviousChanges() {
+        return this.previous_changes.length > 0;
+    }
+
+    get sizeTmpChanges() {
+        return this.tmp_changes.length;
+    }
+    isNotEmptyTmpChanges() {
+        return this.tmp_changes.length > 0;
+    }
+
+    clear() {
+        this.previous_changes = [];
+        this.tmp_changes = [];
+    }
+}
+
 let canvas = document.getElementById('paint-segmap'), // capturar canvas
     ctx = canvas.getContext('2d'), // contexto - nos permite dibujar sobre este objeto, manipularlo
     x=0, y=0,
-    drawing = false;
+    drawing = false,
+    changes = new Changes();
+
 
 ctx.canvas.width  = canvas.offsetWidth;
 ctx.canvas.height = canvas.offsetHeight;
@@ -53,6 +112,9 @@ function pencil() {
     // Capturamos el primer evento que sucede - cuando el usuario hace click sobre el canvas
     // e -> datos de donde el usuario dio click en la pantalla
     canvas.onmousedown = function(e) {
+        pixels = [];
+        previous_colors = [];
+
         // conseguimos la coordenadas correspondientes en el canvas
         x = e.pageX - canvas.offsetLeft; // posición en x donde el usuario dio click en la pantalla - la posicion del canvas
         y = e.pageY - canvas.offsetTop; // posición en y donde el usuario dio click en la pantalla - la posicion del canvas
@@ -70,7 +132,10 @@ function pencil() {
             x = e.pageX - canvas.offsetLeft;
             y = e.pageY - canvas.offsetTop;
             //~ draw('line', x_prev, y_prev, x, y);
-            plotLine(x_prev, y_prev, x, y);
+            const change = plotLine(x_prev, y_prev, x, y);
+
+            pixels = pixels.concat(change.pixels);
+            previous_colors = previous_colors.concat(change.previous_color);
         }
     };
 
@@ -81,8 +146,15 @@ function pencil() {
             // -> puntos en este momoento donde se encuentra el ratón, donde llegó
             //~ draw('line', x, y,
                   //~ e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop);
-            plotLine(x, y,
-                     e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop);
+            const change = plotLine(x, y,
+                                    e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop);
+
+
+            changes.push({
+                pixels: pixels.concat(change.pixels),
+                previous_color: previous_colors.concat(change.previous_color),
+                color: change.color
+            });
 
             drawing = false;
             x = 0, y = 0;
@@ -121,8 +193,11 @@ function line() {
 
             //~ draw('line', x, y,
                   //~ e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop);
-            plotLine(x, y,
-                     e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop);
+            const change = plotLine(x, y,
+                                    e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop);
+
+
+            changes.push(change);
 
             drawing = false;
             x = 0, y = 0;
@@ -136,11 +211,16 @@ function line() {
  */
 function plotLine(x0, y0, x1, y1) {
     img = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const line_pixels = [],
-          new_color = hex2rgb(ctx.strokeStyle);
-    const savePixel = (x, y) => {
-        if (!line_pixels.some(function(p){return p.x == x && p.y == y})) {
-            line_pixels.push({x: x, y: y});
+    const new_color = hex2rgb(ctx.strokeStyle),
+          line_pixels = [],
+          pixel_colors = [];
+
+    savePixel = (red_index) => {
+        //~ if (!line_pixels.some(function(p){return p.x == x && p.y == y})) {
+        if (!line_pixels.includes(red_index)) {
+            const color = img.data.slice(red_index, red_index+3);
+            pixel_colors.push({r: color[0], g: color[1], b: color[2]});
+            line_pixels.push(red_index);
             return true;
         }
         return false;
@@ -166,8 +246,7 @@ function plotLine(x0, y0, x1, y1) {
         }
 
         while (((!perp && (x != x1 || y != y1)) || ++i<len)){
-            if (savePixel(x, y))
-                setPixelColorXY(x, y, new_color);
+            setPixelColorXY(x, y, new_color);
 
             if (D>=0) {
                 y += sy; x += sx;
@@ -180,7 +259,7 @@ function plotLine(x0, y0, x1, y1) {
             }
         }
 
-        if (!perp && savePixel(x1, y1))
+        if (!perp)
             setPixelColorXY(x1, y1, new_color);
 
         return {x: x, y: y};
@@ -208,16 +287,20 @@ function plotLine(x0, y0, x1, y1) {
 
         /* Fill line */
         fillTo(Math.round((x0+x1)/2), Math.round((y0+y1)/2),
-               hex2rgb(ctx.strokeStyle), line_pixels);
+                 hex2rgb(ctx.strokeStyle), line_pixels);
     }
+
+    return { pixels: line_pixels,
+             previous_color: pixel_colors,
+             color: ctx.strokeStyle }
 }
 
 
 
-function setPixelColorXY(x, y, color) {
-    if (x >= 0 && x < img.width && y >= 0 && y < img.height ){
-        const r = (x + y * img.width) * 4;
-
+function setPixelColorXY(x, y, color, save=true) {
+    const r = (x + y * img.width) * 4;
+    if (x >= 0 && x < img.width && y >= 0 && y < img.height &&
+        (!save || savePixel(r))){
         img.data[r] = color.r;
         img.data[r+1] = color.g;
         img.data[r+2] = color.b;
@@ -225,8 +308,9 @@ function setPixelColorXY(x, y, color) {
     }
 }
 
-function setPixelColor(r, color) {
-    if (r >= 0 && r < img.width*img.height*4){
+function setPixelColor(r, color, save=true) {
+    if (r >= 0 && r < img.width*img.height*4 &&
+        (!save || savePixel(r))){
         img.data[r] = color.r;
         img.data[r+1] = color.g;
         img.data[r+2] = color.b;
@@ -250,8 +334,8 @@ function fillTo(x, y, end_color, shape_pixels) {
     const red = (open_set[0].y * canvas.width + open_set[0].x) * 4,
           new_color = hex2rgb(ctx.fillStyle);
 
-    for (pixel of shape_pixels)
-        checked[pixel.x][pixel.y] = true;
+    //~ for (pixel of shape_pixels)
+        //~ checked[pixel.x][pixel.y] = true;
 
     // Mientras haya elementos en la lista de abiertos
     while (open_set.length > 0) {
@@ -262,10 +346,11 @@ function fillTo(x, y, end_color, shape_pixels) {
 
         const same_color = colorMatch(r, end_color);
         if (!checked[pixel.x][pixel.y] && (!same_color ||
-            (same_color && !shape_pixels.some(function(p){return p.x == pixel.x && p.y == pixel.y})))){
+            (same_color && !shape_pixels.includes(r)))){
 
             if (!same_color)
                 setPixelColor(r, new_color);
+
 
             if (pixel.x>0 && !checked[pixel.x-1][pixel.y])
                 open_set.push({x: (pixel.x-1), y: pixel.y});
@@ -285,6 +370,7 @@ function fillTo(x, y, end_color, shape_pixels) {
 
     // Actualizar canvas
     ctx.putImageData(img, 0, 0);
+
 }
 
 function rectangle() {
@@ -320,8 +406,10 @@ function rectangle() {
                   //~ e.pageX - canvas.offsetLeft, e.pageY - canvas.offsetTop);
             //~ ctx.rect(x1, y1, x2-x1, y2-y1);
 
-            plotRectangle(x, y,
-                          e.pageX - canvas.offsetLeft - x, e.pageY - canvas.offsetTop - y);
+            const change = plotRectangle(x, y,
+                                         e.pageX - canvas.offsetLeft - x, e.pageY - canvas.offsetTop - y);
+
+            changes.push(change);
 
             drawing = false;
             x = 0, y = 0;
@@ -333,7 +421,16 @@ function plotRectangle(x0, y0, width, height) {
     img = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const new_color = hex2rgb(ctx.strokeStyle),
           si = width > 0 ? 1 : -1,
-          sj = height > 0 ? 1 : -1;
+          sj = height > 0 ? 1 : -1,
+          rectangle_pixels = [],
+          pixel_colors = [];
+
+    savePixel = (red_index) => {
+        const color = img.data.slice(red_index, red_index+3);
+        pixel_colors.push({r: color[0], g: color[1], b: color[2]});
+        rectangle_pixels.push(red_index);
+        return true;
+    }
 
     for (let i=0; i!=width+si; i+=si)
         for (let j=0; j!=height+sj; j+=sj)
@@ -341,6 +438,10 @@ function plotRectangle(x0, y0, width, height) {
 
     // Update canvas
     ctx.putImageData(img, 0, 0);
+
+    return { pixels: rectangle_pixels,
+             previous_color: pixel_colors,
+             color: ctx.strokeStyle }
 }
 
 function circle() {
@@ -380,8 +481,10 @@ function circle() {
             const x_curr = e.pageX - canvas.offsetLeft,
                   y_curr = e.pageY - canvas.offsetTop;
 
-            plotCircle(Math.round((x+x_curr)/2), Math.round((y+y_curr)/2), // center
-                       Math.round(Math.hypot(x_curr-x, y_curr-y)/2)); // radius
+            const change = plotCircle(Math.round((x+x_curr)/2), Math.round((y+y_curr)/2), // center
+                                      Math.round(Math.hypot(x_curr-x, y_curr-y)/2)); // radius
+
+            changes.push(change);
 
             drawing = false;
             x = 0, y = 0;
@@ -392,10 +495,14 @@ function circle() {
 // https://www.geeksforgeeks.org/bresenhams-circle-drawing-algorithm/
 function plotCircle(xc, yc, radius) {
     img = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const circle_pixels = [],
-          new_color = hex2rgb(ctx.strokeStyle);
-    const savePixel = (x, y) => {
-        circle_pixels.push({x: x, y: y});
+    const new_color = hex2rgb(ctx.strokeStyle),
+          circle_pixels = [],
+          pixel_colors = [];
+    savePixel = (red_index) => {
+        const color = img.data.slice(red_index, red_index+3);
+        pixel_colors.push({r: color[0], g: color[1], b: color[2]});
+        circle_pixels.push(red_index);
+        return true;
     }
 
     // Function to draw all other 7 pixels present at symmetric position
@@ -408,15 +515,6 @@ function plotCircle(xc, yc, radius) {
         setPixelColorXY(xc-y, yc+x, new_color);
         setPixelColorXY(xc+y, yc-x, new_color);
         setPixelColorXY(xc-y, yc-x, new_color);
-
-        savePixel(xc+x, yc+y);
-        savePixel(xc-x, yc+y);
-        savePixel(xc+x, yc-y);
-        savePixel(xc-x, yc-y);
-        savePixel(xc+y, yc+x);
-        savePixel(xc-y, yc+x);
-        savePixel(xc+y, yc-x);
-        savePixel(xc-y, yc-x);
     }
 
     /* Draw circle */
@@ -442,6 +540,10 @@ function plotCircle(xc, yc, radius) {
     /* Fill circle */
     fillTo(xc, yc,
            hex2rgb(ctx.strokeStyle), circle_pixels);
+
+    return { pixels: circle_pixels,
+             previous_color: pixel_colors,
+             color: ctx.strokeStyle }
 }
 
 function bucket_fill() {
@@ -455,8 +557,16 @@ function bucket_fill() {
         const red = (open_set[0].y * canvas.width + open_set[0].x) * 4,
               color2change = {r: img.data[red], g: img.data[red+1], b: img.data[red+2]},
               new_color = hex2rgb(ctx.fillStyle),
-              size_width = canvas.width*4;
+              size_width = canvas.width*4,
+              filled_pixels = [],
+              pixel_colors = [];;
         // color2change = img.data.slice(red, red+3);
+        savePixel = (red_index) => {
+            const color = img.data.slice(red_index, red_index+3);
+            pixel_colors.push({r: color[0], g: color[1], b: color[2]});
+            filled_pixels.push(red_index);
+            return true;
+        }
 
         // Mientras haya elementos en la lista de abiertos
         while (open_set.length > 0) {
@@ -490,6 +600,12 @@ function bucket_fill() {
 
         // Actualizar canvas
         ctx.putImageData(img, 0, 0);
+
+        changes.push({
+            pixels: filled_pixels,
+            previous_color: pixel_colors,
+            color: ctx.strokeStyle
+        });
     };
 }
 
@@ -551,6 +667,8 @@ function clear_canvas() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     ctx.fillStyle = color_prev;
+
+    changes.clear();
 }
 
 
@@ -573,6 +691,35 @@ function compute_fake_img() {
     xhr.onload = function() {};
     xhr.send(fd);
 };
+
+function undo() {
+    if (changes.isNotEmptyPreviousChanges()) {
+        img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const change = changes.popPreviousChanges();
+
+        for (let i = change.pixels.length-1; i>=0; --i)
+            setPixelColor(change.pixels[i], change.previous_color[i], save=false);
+
+        // Update canvas
+        ctx.putImageData(img, 0, 0);
+    }
+}
+
+function redo() {
+    if (changes.isNotEmptyTmpChanges()) {
+        img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const change = changes.popTmpChanges(),
+              color = hex2rgb(change.color);
+
+        for (r of change.pixels)
+            setPixelColor(r, color, save=false);
+
+        // Update canvas
+        ctx.putImageData(img, 0, 0);
+    }
+}
+
+
 
 
 // Change tool button style after click
