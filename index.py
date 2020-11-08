@@ -109,7 +109,6 @@ def transform_segmentation_map_from_color (segmap_color):
     """Transforms the given color segmentation map into a grayscale segmentation map
       by assigning the corresponding identifier to each color.
     """
-    print(segmap_color)
     segmap = np.zeros((segmap_color.shape[0], segmap_color.shape[1]), dtype=np.uint8)
 
     for color, id in color_labels.items():
