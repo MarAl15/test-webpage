@@ -9,6 +9,7 @@ import base64, cv2
 import numpy as np
 from PIL import Image
 import io
+from ast import literal_eval
 #https://flask.palletsprojects.com/en/1.1.x/patterns/flashing/
 
 app = Flask(__name__)
@@ -16,8 +17,8 @@ app.secret_key = os.environ.get('SECRET_KEY')
 
 # TENSORFLOW
 tf.get_logger().setLevel(logging.ERROR)
-# ~ gpus= tf.config.experimental.list_physical_devices('GPU')
-# ~ tf.config.experimental.set_memory_growth(gpus[0], True)
+gpus= tf.config.experimental.list_physical_devices('GPU')
+tf.config.experimental.set_memory_growth(gpus[0], True)
 # Parse arguments
 args = parse_args(train=False, one=True)
 # Initialize tester
@@ -59,6 +60,7 @@ def demo():
 
     return render_template("demo.html")
 
+
 @app.route('/demov2', methods=['GET', 'POST'])
 @cross_origin()
 def demo_v2():
@@ -87,6 +89,9 @@ def demo_v2():
             # Convert the data URL to an OpenCV image
             segmap = uri2img(b64_string)
 
+            # Transform the color segmentation map to id segmentation map
+            segmap = transform_segmentation_map_from_color(segmap)
+
             #########################
             #   SYNTHESIZED IMAGE
             #########################
@@ -98,6 +103,21 @@ def demo_v2():
 
     return render_template("demov2.html")
 
+with open('./datasets/ADE5K/color_semantic_labels.txt', 'r') as f:
+    color_labels = literal_eval(f.read())
+def transform_segmentation_map_from_color (segmap_color):
+    """Transforms the given color segmentation map into a grayscale segmentation map
+      by assigning the corresponding identifier to each color.
+    """
+    print(segmap_color)
+    segmap = np.zeros((segmap_color.shape[0], segmap_color.shape[1]), dtype=np.uint8)
+
+    for color, id in color_labels.items():
+        color_array = np.asarray(color, np.float32).reshape([1, 1, -1])
+        m = np.all(segmap_color == color_array, axis=-1)
+        segmap[m] = id
+
+    return segmap
 
 def generate_fake(segmap, styimg):
     """Creates a fake image from the segmentation map and the style image, and
@@ -155,8 +175,10 @@ def uri2img(b64_string):
     encoded_data = b64_string.split(',')[1]
     nparr = np.fromstring(base64.b64decode(encoded_data), np.uint8)
 
-    return cv2.imdecode(nparr, cv2.IMREAD_GRAYSCALE)
-    # ~ return cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
+    # return cv2.imdecode(nparr, cv2.IMREAD_GRAYSCALE)
+    return cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
 
 
