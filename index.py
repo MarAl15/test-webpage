@@ -17,10 +17,14 @@ app.secret_key = os.environ.get('SECRET_KEY')
 
 # TENSORFLOW
 tf.get_logger().setLevel(logging.ERROR)
-gpus= tf.config.experimental.list_physical_devices('GPU')
-tf.config.experimental.set_memory_growth(gpus[0], True)
+gpus = tf.config.list_physical_devices('GPU')
+if len(gpus)>0:
+    tf.config.experimental.set_memory_growth(gpus[0], True)
 # Parse arguments
 args = parse_args(train=False, one=True)
+args.semantic_label_path = './datasets/ADE5K/semantic_labels.txt'
+args.checkpoint_dir = './checkpoints'
+args.use_vae = True
 # Initialize tester
 tester = TesterOne(args)
 
