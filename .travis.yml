@@ -1,0 +1,13 @@
+language: python
+
+python:
+    - '3.8'
+
+env:
+  global:
+    secure: ZFdAhWrsGCFE/Oue0suUoTFJy7/+Ocr5jsjA0pjk798B6cPG8ShNEcM14GZF9bB94vDNbzBRqnT03WiK4XYAJTx6bBY2Aqi/Rc958cECQDtSBxPYZaDAmzjHzEzgeFi9CH/P6qlUbmYbbQbQhmJQxfRkgWh9kh5oolTLrbhVTsu8QjFVGGHVbYKA/zYYFoO9Myb7Ic4NsWAyeB1aPWVon4K/4EJkWDdBSIPpLBjkT4fIfntOiVLrC/oKj/JKIb6oiAepORIhGJLq248HQsyTbKg5QiIhk6E6I4RU/SOvLAEz4gXYd7LIgOtsMcTZg/alvhnvkqQ5gWEMlYCoXxDgDfUrfUxDaFdRM39mfZ0XIsQha2ZI07UuBMGaUFRCytOWNB59b3weoGJYbRAH1UrHFzguSch0P3LeCT47ZJa6xIPzNsqJCsBXTrHmbYwsS1w7qVA1Y5kQsYRZwTf7pLfG1MgdPGwh5WsLN4JgffGigEspUmKzcDDmhcwYf9MnkOZi1FIKJ1zUEF3ZQpEYox55Izgm9AEvYTKkETFIuxElSMG+HGO1pKEu0L55scUXkY9C7vRSVFD4qsi2XUxc/M5VPJl1w3mumhblfNOVsxbrPUaTdE7/S2aQLRQrao4zRKeLirMlwc66Bm82tfu5OZdasfGkwkPlMLX98RHohKfn5PU=
+
+install:
+    - pip install -r requirements.txt
+script:
+    - python test.py
