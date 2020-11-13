@@ -158,7 +158,7 @@ def file2img(file, color_mode=cv2.IMREAD_COLOR):
     img = file.read()
 
     # Convert string data to numpy array
-    img = np.fromstring(img, np.uint8)
+    img = np.frombuffer(img, np.uint8)
 
     # Convert numpy array to image
     img = cv2.imdecode(img, color_mode)
@@ -176,7 +176,7 @@ def uri2img(b64_string):
     Credit: https://stackoverflow.com/a/54205640/2415512
     """
     encoded_data = b64_string.split(',')[1]
-    nparr = np.fromstring(base64.b64decode(encoded_data), np.uint8)
+    nparr = np.frombuffer(base64.b64decode(encoded_data), np.uint8)
 
     img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
